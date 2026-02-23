@@ -97,78 +97,87 @@ app.options(/.*/, cors(corsOptions));
 //   }
 // }));
 
-app.use(helmet({
-  hsts: {
-    maxAge: 31536000,
-    includeSubDomains: true,
-    preload: true
-  },
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'none'"],
 
-      // ✅ ADD Razorpay here
-      scriptSrc: [
-        "'self'",
-        "'unsafe-inline'",
-        "'unsafe-eval'",
-        "https://challenges.cloudflare.com",
-        "https://checkout.razorpay.com",
-        "https://api.razorpay.com"
-      ],
+app.use(
+  helmet({
+    contentSecurityPolicy: false
+  })
+);
 
-      scriptSrcAttr: ["'none'"],
 
-      // ✅ ADD Google Fonts stylesheet
-      styleSrc: [
-        "'self'",
-        "'unsafe-inline'",
-        "https://fonts.googleapis.com"
-      ],
 
-      // ✅ ADD Cloudinary images
-      imgSrc: [
-        "'self'",
-        "blob:",
-        "data:",
-        "https://res.cloudinary.com"
-      ],
+// app.use(helmet({
+//   hsts: {
+//     maxAge: 31536000,
+//     includeSubDomains: true,
+//     preload: true
+//   },
+//   contentSecurityPolicy: {
+//     directives: {
+//       defaultSrc: ["'none'"],
 
-      // ✅ Razorpay API requests
-      connectSrc: [
-        "'self'",
-        "https://challenges.cloudflare.com",
-        "https://api.razorpay.com",
-        "https://checkout.razorpay.com"
-      ],
+//       // ✅ ADD Razorpay here
+//       scriptSrc: [
+//         "'self'",
+//         "'unsafe-inline'",
+//         "'unsafe-eval'",
+//         "https://challenges.cloudflare.com",
+//         "https://checkout.razorpay.com",
+//         "https://api.razorpay.com"
+//       ],
 
-      // ✅ Razorpay popup iframe
-      frameSrc: [
-        "'self'",
-        "blob:",
-        "https://challenges.cloudflare.com",
-        "https://checkout.razorpay.com"
-      ],
+//       scriptSrcAttr: ["'none'"],
 
-      childSrc: [
-        "'self'",
-        "blob:",
-        "https://challenges.cloudflare.com",
-        "https://checkout.razorpay.com"
-      ],
+//       // ✅ ADD Google Fonts stylesheet
+//       styleSrc: [
+//         "'self'",
+//         "'unsafe-inline'",
+//         "https://fonts.googleapis.com"
+//       ],
 
-      // ✅ Fonts loading
-      fontSrc: [
-        "'self'",
-        "https://fonts.gstatic.com"
-      ],
+//       // ✅ ADD Cloudinary images
+//       imgSrc: [
+//         "'self'",
+//         "blob:",
+//         "data:",
+//         "https://res.cloudinary.com"
+//       ],
 
-      workerSrc: ["blob:"],
-      formAction: ["'self'"],
-      baseUri: ["'self'"]
-    }
-  }
-}));
+//       // ✅ Razorpay API requests
+//       connectSrc: [
+//         "'self'",
+//         "https://challenges.cloudflare.com",
+//         "https://api.razorpay.com",
+//         "https://checkout.razorpay.com"
+//       ],
+
+//       // ✅ Razorpay popup iframe
+//       frameSrc: [
+//         "'self'",
+//         "blob:",
+//         "https://challenges.cloudflare.com",
+//         "https://checkout.razorpay.com"
+//       ],
+
+//       childSrc: [
+//         "'self'",
+//         "blob:",
+//         "https://challenges.cloudflare.com",
+//         "https://checkout.razorpay.com"
+//       ],
+
+//       // ✅ Fonts loading
+//       fontSrc: [
+//         "'self'",
+//         "https://fonts.gstatic.com"
+//       ],
+
+//       workerSrc: ["blob:"],
+//       formAction: ["'self'"],
+//       baseUri: ["'self'"]
+//     }
+//   }
+// }));
 
 // app.use(
 //   helmet({
