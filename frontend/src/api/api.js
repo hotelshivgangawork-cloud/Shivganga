@@ -1,7 +1,7 @@
 import axios from "axios";
 
-// const FALLBACK_API = "https://shiv-ganga-3.onrender.com/api";
-const FALLBACK_API = "http://localhost:5001/api";
+const FALLBACK_API = "https://shiv-ganga-3.onrender.com/api";
+// const FALLBACK_API = "http://localhost:5001/api";
 let resolvedBaseURL = import.meta.env.VITE_API_BASE_URL || FALLBACK_API;
 
 // Guard against misconfigured baseURL pointing to the frontend origin in production
