@@ -1,6 +1,6 @@
 import express from "express"
 import cors from "cors"
-import {fileURLToPath} from "url"
+import { fileURLToPath } from "url"
 import helmet from "helmet"
 import compression from "compression"
 import rateLimit from "express-rate-limit"
@@ -72,68 +72,166 @@ app.use(cors(corsOptions));
 app.options(/.*/, cors(corsOptions));
 
 // Security: Helmet with enhanced HSTS
-app.use(
-  helmet({
-    hsts: {
-      maxAge: 31536000,
-      includeSubDomains: true,
-      preload: true,
-    },
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
+// app.use(helmet({
+//   hsts: {
+//     maxAge: 31536000,
+//     includeSubDomains: true,
+//     preload: true
+//   },
+//   contentSecurityPolicy: {
+//     directives: {
+//       defaultSrc: ["'none'"],
+//       scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://challenges.cloudflare.com", "https://checkout.razorpay.com",
+//         "https://api.razorpay.com"],
+//       scriptSrcAttr: ["'none'"],
+//       styleSrc: ["'self'", "'unsafe-inline'"],
+//       imgSrc: ["'self'", "blob:", "data:"],
+//       connectSrc: ["'self'", "https://challenges.cloudflare.com"],
+//       frameSrc: ["'self'", "blob:", "https://challenges.cloudflare.com"],  // ← key fix
+//       childSrc: ["'self'", "blob:", "https://challenges.cloudflare.com"],  // ← key fix
+//       workerSrc: ["blob:"],
+//       formAction: ["'self'"],
+//       baseUri: ["'self'"],
+//       // NO sandbox directive here
+//     }
+//   }
+// }));
 
-        scriptSrc: [
-          "'self'",
-          "'unsafe-inline'",
-          "'unsafe-eval'",
-          "https://checkout.razorpay.com",
-          "https://api.razorpay.com",
-          "https://challenges.cloudflare.com",
-        ],
+app.use(helmet({
+  hsts: {
+    maxAge: 31536000,
+    includeSubDomains: true,
+    preload: true
+  },
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'none'"],
 
-        scriptSrcAttr: ["'unsafe-inline'"],
+      // ✅ ADD Razorpay here
+      scriptSrc: [
+        "'self'",
+        "'unsafe-inline'",
+        "'unsafe-eval'",
+        "https://challenges.cloudflare.com",
+        "https://checkout.razorpay.com",
+        "https://api.razorpay.com"
+      ],
 
-        styleSrc: [
-          "'self'",
-          "'unsafe-inline'",
-          "https://fonts.googleapis.com",
-        ],
+      scriptSrcAttr: ["'none'"],
 
-        imgSrc: [
-          "'self'",
-          "data:",
-          "blob:",
-          "https://res.cloudinary.com",
-        ],
+      // ✅ ADD Google Fonts stylesheet
+      styleSrc: [
+        "'self'",
+        "'unsafe-inline'",
+        "https://fonts.googleapis.com"
+      ],
 
-        connectSrc: [
-          "'self'",
-          "https://api.razorpay.com",
-          "https://checkout.razorpay.com",
-          "https://challenges.cloudflare.com",
-        ],
+      // ✅ ADD Cloudinary images
+      imgSrc: [
+        "'self'",
+        "blob:",
+        "data:",
+        "https://res.cloudinary.com"
+      ],
 
-        frameSrc: [
-          "'self'",
-          "https://checkout.razorpay.com",
-          "https://api.razorpay.com",
-          "https://challenges.cloudflare.com",
-        ],
+      // ✅ Razorpay API requests
+      connectSrc: [
+        "'self'",
+        "https://challenges.cloudflare.com",
+        "https://api.razorpay.com",
+        "https://checkout.razorpay.com"
+      ],
 
-        childSrc: [
-          "'self'",
-          "https://checkout.razorpay.com",
-          "https://challenges.cloudflare.com",
-        ],
+      // ✅ Razorpay popup iframe
+      frameSrc: [
+        "'self'",
+        "blob:",
+        "https://challenges.cloudflare.com",
+        "https://checkout.razorpay.com"
+      ],
 
-        workerSrc: ["blob:"],
-        formAction: ["'self'"],
-        baseUri: ["'self'"],
-      },
-    },
-  })
-);
+      childSrc: [
+        "'self'",
+        "blob:",
+        "https://challenges.cloudflare.com",
+        "https://checkout.razorpay.com"
+      ],
+
+      // ✅ Fonts loading
+      fontSrc: [
+        "'self'",
+        "https://fonts.gstatic.com"
+      ],
+
+      workerSrc: ["blob:"],
+      formAction: ["'self'"],
+      baseUri: ["'self'"]
+    }
+  }
+}));
+
+// app.use(
+//   helmet({
+//     hsts: {
+//       maxAge: 31536000,
+//       includeSubDomains: true,
+//       preload: true,
+//     },
+//     contentSecurityPolicy: {
+//       directives: {
+//         defaultSrc: ["'self'"],
+
+//         scriptSrc: [
+//           "'self'",
+//           "'unsafe-inline'",
+//           "'unsafe-eval'",
+//           "https://checkout.razorpay.com",
+//           "https://api.razorpay.com",
+//           "https://challenges.cloudflare.com",
+//         ],
+
+//         scriptSrcAttr: ["'unsafe-inline'"],
+
+//         styleSrc: [
+//           "'self'",
+//           "'unsafe-inline'",
+//           "https://fonts.googleapis.com",
+//         ],
+
+//         imgSrc: [
+//           "'self'",
+//           "data:",
+//           "blob:",
+//           "https://res.cloudinary.com",
+//         ],
+
+//         connectSrc: [
+//           "'self'",
+//           "https://api.razorpay.com",
+//           "https://checkout.razorpay.com",
+//           "https://challenges.cloudflare.com",
+//         ],
+
+//         frameSrc: [
+//           "'self'",
+//           "https://checkout.razorpay.com",
+//           "https://api.razorpay.com",
+//           "https://challenges.cloudflare.com",
+//         ],
+
+//         childSrc: [
+//           "'self'",
+//           "https://checkout.razorpay.com",
+//           "https://challenges.cloudflare.com",
+//         ],
+
+//         workerSrc: ["blob:"],
+//         formAction: ["'self'"],
+//         baseUri: ["'self'"],
+//       },
+//     },
+//   })
+// );
 
 
 // Compression middleware for all responses
@@ -214,10 +312,10 @@ app.use("/api", otpRoutes);
 app.use("/api", membershipRoutes);
 app.use("/api", newsletterRoutes);
 
-app.use("/health",(_,res)=>{
+app.use("/health", (_, res) => {
   res.status(200).json({
-    success:true,
-    status:"OK"
+    success: true,
+    status: "OK"
   })
 })
 
