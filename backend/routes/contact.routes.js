@@ -18,7 +18,7 @@ const contactLimiter = rateLimit({
 router.post(
   "/contact",
   contactLimiter,
-  verifyTurnstile,          // Verify Turnstile token
+  // verifyTurnstile,          // Verify Turnstile token
   validateContactForm,      // Validate & sanitize inputs
   validateBody(createContactSchema), // Additional Joi validation
   createContact

@@ -20,7 +20,6 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { FaWhatsapp } from "react-icons/fa";
 import bgImage from "../assets/homepage-images/banner-one.webp";
 import Seo from "../components/Seo";
-import Turnstile from "../components/Turnstile";
 import ResponsiveImage from "../components/ResponsiveImage";
 import api from "../api/api";
 import { rooms as fallbackRooms } from "../data/rooms";
@@ -72,11 +71,11 @@ const ACTIVITIES = [
 
 export default function BookingPage() {
   // Cloudflare Turnstile CAPTCHA
-  const turnstileRef = useRef(null);
-  const handleCaptchaVerify = (token) => {
-    setCaptchaToken(token);
-    setPaymentError("");
-  };
+  // const turnstileRef = useRef(null);
+  // const handleCaptchaVerify = (token) => {
+  //   setCaptchaToken(token);
+  //   setPaymentError("");
+  // };
   const today = new Date().toISOString().split("T")[0];
   const navigate = useNavigate(); // ✅ INSIDE component
   const location = useLocation();
@@ -151,15 +150,15 @@ export default function BookingPage() {
   const [selectedPaymentType, setSelectedPaymentType] = useState(null); // "FULL" | "PARTIAL"
   const PARTIAL_PAYMENT_FIXED_AMOUNT = 1000; // ₹1000 fixed partial payment
   const [paymentError, setPaymentError] = useState(""); // ✅ Added from version 2 for error handling
-  const [captchaToken, setCaptchaToken] = useState("");
+  // const [captchaToken, setCaptchaToken] = useState("");
 
   // whatsApp link
   const WhatsAppLink = () => {
     window.open(
       `https://wa.me/${formData.phone}?text=${encodeURIComponent(
         "Thank you for booking with Shiv Ganga Hotel. Your booking reference is " +
-          bookingReference +
-          ". We look forward to hosting you!",
+        bookingReference +
+        ". We look forward to hosting you!",
       )}`,
     );
   };
@@ -299,13 +298,13 @@ export default function BookingPage() {
     setPaymentError(""); // ✅ Clear previous errors
     try {
       // ✅ Verify Cloudflare Turnstile before payment
-     const token = turnstileRef.current?.getToken();
+      // const token = turnstileRef.current?.getToken();
 
-if (!token) {
-  setPaymentError("Please complete the CAPTCHA verification");
-  setShowPaymentChoice(true);
-  return;
-}
+      // if (!token) {
+      //   setPaymentError("Please complete the CAPTCHA verification");
+      //   setShowPaymentChoice(true);
+      //   return;
+      // }
 
       // ✅ Added Razorpay check from version 2
       if (typeof window.Razorpay === "undefined") {
@@ -360,7 +359,7 @@ if (!token) {
         // amountInPaise, // ✅ Added from version 2
         // totalAmount: finalPayableAmount, // ✅ Added from version 2
         finalAmount: finalPayableAmount,
-        captchaToken: token,// Include Turnstile token
+        // captchaToken: token,// Include Turnstile token
       });
 
       const { order, transactionId, bookingPayload } = res.data;
@@ -559,7 +558,7 @@ if (!token) {
 
   const nights = Math.round(
     (new Date(formData.checkOut) - new Date(formData.checkIn)) /
-      (1000 * 60 * 60 * 24),
+    (1000 * 60 * 60 * 24),
   );
 
   const roomTotal = formData.selectedRooms.reduce((acc, room) => {
@@ -782,10 +781,9 @@ if (!token) {
                       className={`
                         w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center
                         border transition-all duration-500 text-primary
-                        ${
-                          isActive
-                            ? "border-accent bg-accent"
-                            : "border-white bg-white/80"
+                        ${isActive
+                          ? "border-accent bg-accent"
+                          : "border-white bg-white/80"
                         }
                         ${isCurrent ? "ring-4 ring-accent/20 scale-110" : ""}
                       `}
@@ -803,10 +801,9 @@ if (!token) {
                         mt-2 text-[9px] sm:text-[11px]
                         uppercase tracking-wide font-medium
                         leading-tight transition-all duration-500
-                        ${
-                          isActive
-                            ? "text-accent opacity-100"
-                            : "text-white/60 opacity-70"
+                        ${isActive
+                          ? "text-accent opacity-100"
+                          : "text-white/60 opacity-70"
                         }
                       `}
                     >
@@ -954,14 +951,15 @@ if (!token) {
                   </div>
                 )}
 
-                {/* Cloudflare Turnstile CAPTCHA */}
+                {/* Cloudflare Turnstile CAPTCHA
                 <div className="mb-4 bg-gray-50 p-3 rounded-lg border border-gray-200">
                   <Turnstile
+                    ref={turnstileRef}
                     onVerify={(token) => {
                       setCaptchaToken(token);
                     }}
                   />
-                </div>
+                </div> */}
 
                 <button
                   className="w-full bg-primary text-white py-3 rounded-xl mb-3"
@@ -1151,11 +1149,10 @@ if (!token) {
                       return (
                         <div
                           key={room._id}
-                          className={`group bg-white rounded-2xl overflow-hidden transition-all duration-500 border ${
-                            isSelected
+                          className={`group bg-white rounded-2xl overflow-hidden transition-all duration-500 border ${isSelected
                               ? "border-accent shadow-xl"
                               : "border-gray-100 shadow-sm hover:shadow-xl"
-                          }`}
+                            }`}
                         >
                           {/* Card Layout */}
                           <div className="flex flex-col lg:flex-row h-full">
@@ -1206,11 +1203,10 @@ if (!token) {
                                           onClick={() =>
                                             updateRoomPlan(room._id, plan)
                                           }
-                                          className={`px-4 py-2 text-xs font-medium uppercase tracking-wider rounded-full transition-all duration-300 border ${
-                                            currentPlan === plan
+                                          className={`px-4 py-2 text-xs font-medium uppercase tracking-wider rounded-full transition-all duration-300 border ${currentPlan === plan
                                               ? "bg-primary text-white border-primary"
                                               : "border-gray-200 text-gray-500 hover:border-primary hover:text-primary"
-                                          }`}
+                                            }`}
                                         >
                                           {plan.toUpperCase()} (₹{" "}
                                           {room.priceDetails[plan]})
@@ -1246,11 +1242,10 @@ if (!token) {
                                 <button
                                   type="button"
                                   onClick={() => selectRoom(room)}
-                                  className={`w-full sm:flex-1 py-3 text-xs font-bold uppercase tracking-widest rounded-xl transition-all duration-300 ${
-                                    isSelected
+                                  className={`w-full sm:flex-1 py-3 text-xs font-bold uppercase tracking-widest rounded-xl transition-all duration-300 ${isSelected
                                       ? "bg-accent text-primary"
                                       : "border border-gray-300 text-gray-600 hover:border-primary hover:text-primary"
-                                  }`}
+                                    }`}
                                 >
                                   {isSelected ? "Selected" : "Select Room"}
                                 </button>
@@ -1332,11 +1327,10 @@ if (!token) {
                       return (
                         <div
                           key={activity.id}
-                          className={`group relative rounded-2xl overflow-hidden transition-all duration-500 cursor-pointer ${
-                            isSelected
+                          className={`group relative rounded-2xl overflow-hidden transition-all duration-500 cursor-pointer ${isSelected
                               ? "ring-1 ring-accent"
                               : "hover:shadow-xl ring-1 ring-primary/30"
-                          }`}
+                            }`}
                           onClick={() => toggleActivity(activity)}
                         >
                           <div className="h-48 relative overflow-hidden">
@@ -1347,11 +1341,10 @@ if (!token) {
                               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                             />
                             <div
-                              className={`absolute inset-0 transition-colors duration-500 ${
-                                isSelected
+                              className={`absolute inset-0 transition-colors duration-500 ${isSelected
                                   ? "bg-accent/20"
                                   : "bg-primary/20 group-hover:bg-transparent"
-                              }`}
+                                }`}
                             ></div>
 
                             <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-md px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-primary rounded-2xl">
@@ -1382,11 +1375,10 @@ if (!token) {
                                   : "Per Person"}
                               </span>
                               <span
-                                className={`text-[10px] font-bold uppercase tracking-widest transition-colors ${
-                                  isSelected
+                                className={`text-[10px] font-bold uppercase tracking-widest transition-colors ${isSelected
                                     ? "text-accent"
                                     : "text-gray-300 group-hover:text-primary"
-                                }`}
+                                  }`}
                               >
                                 {isSelected ? "Selected" : "Add to Booking"}
                               </span>
@@ -1500,11 +1492,10 @@ if (!token) {
                       }
                       disabled={!canApplyCoupon}
                       className={`px-5 py-2 border rounded-xl font-bold text-sm transition
-             ${
-               canApplyCoupon
-                 ? "border-primary text-white bg-primary hover:text-primary hover:bg-accent"
-                 : "border-gray-300 text-gray-400 cursor-not-allowed opacity-60"
-             }`}
+             ${canApplyCoupon
+                          ? "border-primary text-white bg-primary hover:text-primary hover:bg-accent"
+                          : "border-gray-300 text-gray-400 cursor-not-allowed opacity-60"
+                        }`}
                     >
                       Apply Coupon
                     </button>
@@ -1562,10 +1553,9 @@ if (!token) {
                             onClick={sendOtp}
                             disabled={otpVerified || otpCountdown > 0}
                             className={`px-4 py-2 text-xs uppercase tracking-wider font-bold border transition-all cursor-pointer rounded-2xl
-                              ${
-                                otpVerified
-                                  ? "bg-green-600 text-white border-green-600"
-                                  : "bg-primary text-white border-primary"
+                              ${otpVerified
+                                ? "bg-green-600 text-white border-green-600"
+                                : "bg-primary text-white border-primary"
                               }
                               disabled:opacity-60 disabled:cursor-not-allowed`}
                           >

@@ -43,7 +43,7 @@ export const getAllBookingsForAdmin = async (req, res) => {
   try {
     const bookings = await Booking.find()
       .populate("user", "firstName lastName email")
-      .populate("room", "roomNumber name")
+      .populate("rooms.room", "roomNumber name")
       .sort({ createdAt: -1 });
 
     res.json({
@@ -185,14 +185,16 @@ export const getRecentActivities = async (req, res) => {
   const bookings = await Booking.find({ bookingStatus: "confirmed" })
     .sort({ updatedAt: -1 })
     .limit(10)
-    .populate("room", "name roomNumber")
+    .populate("rooms.room", "name roomNumber")
     .populate("user", "firstName lastName");
 
   let activities = [];
 
   bookings.forEach((b) => {
     const base = {
-      room: `${b.room.name} · Room ${b.room.roomNumber}`,
+      room: b.rooms
+        .map(r => `${r.room?.name} · Room ${r.room?.roomNumber}`)
+        .join(", "),
       user: `${b.user.firstName} ${b.user.lastName}`,
     };
 
@@ -298,7 +300,6 @@ export const getRoomStatusSummary = async (req, res) => {
       data: {
         totalRooms,
         availableRooms,
-        bookedRooms,
         occupiedRooms,
         maintenanceRooms,
       },

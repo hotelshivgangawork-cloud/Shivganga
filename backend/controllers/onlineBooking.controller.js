@@ -43,39 +43,39 @@ export const createPaymentOrder = async (req, res, next) => {
       phoneNumber,
       specialRequest,
       isMember,
-      captchaToken,
+      // captchaToken,
     } = req.body;
 
     // ================= CLOUDLFARE TURNSTILE CAPTCHA VERIFICATION =================
-    if (!captchaToken) {
-      return res.status(400).json({
-        success: false,
-        message: "Please complete the CAPTCHA verification",
-      });
-    }
+    // if (!captchaToken) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: "Please complete the CAPTCHA verification",
+    //   });
+    // }
 
     // Use axios for Turnstile verification
-    const axios = (await import("axios")).default;
-    const verifyResponse = await axios.post(
-      "https://challenges.cloudflare.com/turnstile/v0/siteverify",
-      new URLSearchParams({
-        secret: process.env.TURNSTILE_SECRET_KEY,
-        response: captchaToken,
-      }),
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-      }
-    );
+    // const axios = (await import("axios")).default;
+    // const verifyResponse = await axios.post(
+    //   "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+    //   new URLSearchParams({
+    //     secret: process.env.TURNSTILE_SECRET_KEY,
+    //     response: captchaToken,
+    //   }),
+    //   {
+    //     headers: {
+    //       "Content-Type": "application/x-www-form-urlencoded",
+    //     },
+    //   }
+    // );
 
-    if (!verifyResponse.data.success) {
-      return res.status(400).json({
-        success: false,
-        message: "CAPTCHA verification failed",
-        turnstileError: verifyResponse.data.error_codes || [],
-      });
-    }
+    // if (!verifyResponse.data.success) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: "CAPTCHA verification failed",
+    //     turnstileError: verifyResponse.data.error_codes || [],
+    //   });
+    // }
 
 
     const roomDetails = [];

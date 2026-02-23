@@ -5,9 +5,9 @@ import ResponsiveImage from "../components/ResponsiveImage";
 import Seo from "../components/Seo";
 import api from "../api/api";
 import { useState, useRef } from "react";
-import Turnstile from "../components/Turnstile";
+// import Turnstile from "../components/Turnstile";
 export default function Contact() {
-  const turnstileRef = useRef();
+  // const turnstileRef = useRef();
   const [formData, setFormData] = useState({
   firstName: "",
   lastName: "",
@@ -36,17 +36,17 @@ const handleSubmit = async (e) => {
 
   try {
     // Get Turnstile token
-    const captchaToken = turnstileRef.current?.getToken();
-    if (!captchaToken) {
-      setError("Please complete the CAPTCHA verification");
-      return;
-    }
+    // const captchaToken = turnstileRef.current?.getToken();
+    // if (!captchaToken) {
+    //   setError("Please complete the CAPTCHA verification");
+    //   return;
+    // }
 
     setLoading(true);
 
     await api.post("/contact", {
       ...formData,
-      captchaToken
+      // captchaToken
     });
 
     setSuccess("Your message has been sent successfully 🙏");
@@ -59,8 +59,8 @@ const handleSubmit = async (e) => {
       message: ""
     });
 
-    // Reset Turnstile
-    turnstileRef.current?.reset();
+    // // Reset Turnstile
+    // turnstileRef.current?.reset();
   } catch (err) {
     setError(
       err.response?.data?.message || "Something went wrong. Please try again."
@@ -196,9 +196,9 @@ const handleSubmit = async (e) => {
             </div>
 
             {/* Cloudflare Turnstile CAPTCHA */}
-            <div className="pt-2">
+            {/* <div className="pt-2">
               <Turnstile ref={turnstileRef} />
-            </div>
+            </div> */}
 
             <div className="pt-4">
               <button
