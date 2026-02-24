@@ -331,6 +331,33 @@ export default function BookingPage() {
 
       // const amountInPaise = Math.round(payableAmount * 100); // ✅ Added from version 2
 
+      const priceBreakdown = {
+        roomTotal,
+        extraGuestTotal,
+        activityTotal,
+        grandTotal,
+        membershipDiscountAmount,
+        couponDiscountAmount,
+        finalPayableAmount,
+        paidAmount: type === "PARTIAL" ? Math.min(PARTIAL_PAYMENT_FIXED_AMOUNT, finalPayableAmount) : finalPayableAmount,
+        remainingAmount: type === "PARTIAL" ? Math.max(0, finalPayableAmount - Math.min(PARTIAL_PAYMENT_FIXED_AMOUNT, finalPayableAmount)) : 0,
+        paymentType: type,
+        nights,
+        rooms: formData.selectedRooms.map(room => ({
+          name: room.name,
+          plan: room.plan || "ep",
+          price: room.priceDetails?.[room.plan || "ep"] || room.pricePerNight,
+          quantity: room.quantity,
+          subtotal: (room.priceDetails?.[room.plan || "ep"] || room.pricePerNight) * room.quantity * nights,
+        })),
+        activities: formData.selectedActivities.map(act => ({
+          title: act.title,
+          price: act.price,
+          quantity: Number(act.quantity) || 1,
+          subtotal: act.price * (Number(act.quantity) || 1),
+        })),
+      };
+
       const res = await api.post("/online-booking/create-order", {
         rooms: formData.selectedRooms.map((room) => ({
           roomId: room._id,
@@ -380,6 +407,7 @@ export default function BookingPage() {
               razorpay_signature: response.razorpay_signature,
               transactionId,
               bookingPayload,
+              priceBreakdown
             });
             // ✅ Added verification check from version 2
             if (!verifyRes.data?.success) {
@@ -1150,8 +1178,8 @@ export default function BookingPage() {
                         <div
                           key={room._id}
                           className={`group bg-white rounded-2xl overflow-hidden transition-all duration-500 border ${isSelected
-                              ? "border-accent shadow-xl"
-                              : "border-gray-100 shadow-sm hover:shadow-xl"
+                            ? "border-accent shadow-xl"
+                            : "border-gray-100 shadow-sm hover:shadow-xl"
                             }`}
                         >
                           {/* Card Layout */}
@@ -1204,8 +1232,8 @@ export default function BookingPage() {
                                             updateRoomPlan(room._id, plan)
                                           }
                                           className={`px-4 py-2 text-xs font-medium uppercase tracking-wider rounded-full transition-all duration-300 border ${currentPlan === plan
-                                              ? "bg-primary text-white border-primary"
-                                              : "border-gray-200 text-gray-500 hover:border-primary hover:text-primary"
+                                            ? "bg-primary text-white border-primary"
+                                            : "border-gray-200 text-gray-500 hover:border-primary hover:text-primary"
                                             }`}
                                         >
                                           {plan.toUpperCase()} (₹{" "}
@@ -1243,8 +1271,8 @@ export default function BookingPage() {
                                   type="button"
                                   onClick={() => selectRoom(room)}
                                   className={`w-full sm:flex-1 py-3 text-xs font-bold uppercase tracking-widest rounded-xl transition-all duration-300 ${isSelected
-                                      ? "bg-accent text-primary"
-                                      : "border border-gray-300 text-gray-600 hover:border-primary hover:text-primary"
+                                    ? "bg-accent text-primary"
+                                    : "border border-gray-300 text-gray-600 hover:border-primary hover:text-primary"
                                     }`}
                                 >
                                   {isSelected ? "Selected" : "Select Room"}
@@ -1328,8 +1356,8 @@ export default function BookingPage() {
                         <div
                           key={activity.id}
                           className={`group relative rounded-2xl overflow-hidden transition-all duration-500 cursor-pointer ${isSelected
-                              ? "ring-1 ring-accent"
-                              : "hover:shadow-xl ring-1 ring-primary/30"
+                            ? "ring-1 ring-accent"
+                            : "hover:shadow-xl ring-1 ring-primary/30"
                             }`}
                           onClick={() => toggleActivity(activity)}
                         >
@@ -1342,8 +1370,8 @@ export default function BookingPage() {
                             />
                             <div
                               className={`absolute inset-0 transition-colors duration-500 ${isSelected
-                                  ? "bg-accent/20"
-                                  : "bg-primary/20 group-hover:bg-transparent"
+                                ? "bg-accent/20"
+                                : "bg-primary/20 group-hover:bg-transparent"
                                 }`}
                             ></div>
 
@@ -1376,8 +1404,8 @@ export default function BookingPage() {
                               </span>
                               <span
                                 className={`text-[10px] font-bold uppercase tracking-widest transition-colors ${isSelected
-                                    ? "text-accent"
-                                    : "text-gray-300 group-hover:text-primary"
+                                  ? "text-accent"
+                                  : "text-gray-300 group-hover:text-primary"
                                   }`}
                               >
                                 {isSelected ? "Selected" : "Add to Booking"}
