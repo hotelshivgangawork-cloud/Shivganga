@@ -578,6 +578,7 @@ export const verifyPayment = async (req, res, next) => {
       pendingAmount: bookingDoc.pendingAmount,
       coupon: bookingDoc.coupon,
       activities,
+      priceBreakdown: req?.body.priceBreakdown,
     }).catch((err) => {
       console.error("Booking confirmation email failed:", err.message);
     });
@@ -591,7 +592,13 @@ export const verifyPayment = async (req, res, next) => {
       booking: bookingDoc,
     });
   } catch (error) {
-    await session.abortTransaction();
+    // await session.abortTransaction();
+    // session.endSession();
+
+    if (session.inTransaction()) {
+      await session.abortTransaction();
+    }
+
     session.endSession();
 
     if (req.body.transactionId) {
