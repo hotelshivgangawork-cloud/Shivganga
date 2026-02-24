@@ -39,37 +39,37 @@ const __filename = fileURLToPath(import.meta.url)
 const _dirname = path.dirname(__filename)
 
 // ---------- CORS (apply BEFORE any rate limiters) ----------
-const allowedOrigins = [
-  "http://localhost:5173",
-  "http://localhost:5174",
-  "https://shiv-ganga-3.onrender.com",
-  "https://shiv-ganga-frontend-po3g.vercel.app",
-  "https://hotelshivganga.in",
-  "https://www.hotelshivganga.in",
-  "http://hotelshivganga.in",
-  "http://www.hotelshivganga.in"
-];
+// const allowedOrigins = [
+//   "http://localhost:5173",
+//   "http://localhost:5174",
+//   "https://shiv-ganga-3.onrender.com",
+//   "https://shiv-ganga-frontend-po3g.vercel.app",
+//   "https://hotelshivganga.in",
+//   "https://www.hotelshivganga.in",
+//   "http://hotelshivganga.in",
+//   "http://www.hotelshivganga.in"
+// ];
 
-const corsOptions = {
-  origin: function (origin, callback) {
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  // Allow Accept header for newsletter footer subscription and other JSON APIs
-  allowedHeaders: ["Content-Type", "Authorization", "Accept"],
-  optionsSuccessStatus: 204,
-  preflightContinue: false
-};
+// const corsOptions = {
+//   origin: function (origin, callback) {
+//     if (!origin) return callback(null, true);
+//     if (allowedOrigins.includes(origin)) {
+//       callback(null, true);
+//     } else {
+//       callback(new Error("Not allowed by CORS"));
+//     }
+//   },
+//   credentials: true,
+//   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+//   // Allow Accept header for newsletter footer subscription and other JSON APIs
+//   allowedHeaders: ["Content-Type", "Authorization", "Accept"],
+//   optionsSuccessStatus: 204,
+//   preflightContinue: false
+// };
 
-app.use(cors(corsOptions));
+app.use(cors(origin="*"));
 // Enable CORS pre-flight for all routes (Express 5 + path-to-regexp safe)
-app.options(/.*/, cors(corsOptions));
+// app.options(/.*/, cors(corsOptions));
 
 // Security: Helmet with enhanced HSTS
 // app.use(helmet({
