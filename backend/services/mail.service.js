@@ -152,103 +152,226 @@ export const sendBookingConfirmationMail = async ({
 
   /* ================= EMAIL TEMPLATE ================= */
 
-  const htmlContent = `
-  <div style="font-family:Arial,sans-serif;background:#f6f6f6;padding:20px;">
-    <div style="max-width:700px;margin:auto;background:#ffffff;padding:30px;border-radius:10px;">
+  // const htmlContent = `
+  // <div style="font-family:Arial,sans-serif;background:#f6f6f6;padding:20px;">
+  //   <div style="max-width:700px;margin:auto;background:#ffffff;padding:30px;border-radius:10px;">
 
-      <div style="text-align:center;margin-bottom:20px;">
-        ${
-          system.logo
-            ? `<img src="${system.logo}" style="max-height:80px;margin-bottom:10px;" />`
-            : ""
-        }
-        <h2>${system.systemHotelName}</h2>
-        <p style="color:#666;">Booking Confirmation</p>
-      </div>
+  //     <div style="text-align:center;margin-bottom:20px;">
+  //       ${
+  //         system.logo
+  //           ? `<img src="${system.logo}" style="max-height:80px;margin-bottom:10px;" />`
+  //           : ""
+  //       }
+  //       <h2>${system.systemHotelName}</h2>
+  //       <p style="color:#666;">Booking Confirmation</p>
+  //     </div>
 
-      <p>Hello <b>${name}</b>,</p>
-      <p>Your booking has been successfully confirmed.</p>
+  //     <p>Hello <b>${name}</b>,</p>
+  //     <p>Your booking has been successfully confirmed.</p>
 
-      <hr/>
+  //     <hr/>
 
-      <h3>Booking Details</h3>
-      <div style="display:flex;justify-content:space-between;">
-        <span>Reference</span>
-        <span><b>${bookingReference}</b></span>
-      </div>
-      <div style="display:flex;justify-content:space-between;">
-        <span>Guest ID</span>
-        <span>${guestId}</span>
-      </div>
-      <div style="display:flex;justify-content:space-between;">
-        <span>Check-in</span>
-        <span>${checkInDate}</span>
-      </div>
-      <div style="display:flex;justify-content:space-between;">
-        <span>Check-out</span>
-        <span>${checkOutDate}</span>
-      </div>
-      <div style="display:flex;justify-content:space-between;margin-bottom:15px;">
-        <span>Nights</span>
-        <span>${nights}</span>
-      </div>
+  //     <h3>Booking Details</h3>
+  //     <div style="display:flex;justify-content:space-between;">
+  //       <span>Reference</span>
+  //       <span><b>${bookingReference}</b></span>
+  //     </div>
+  //     <div style="display:flex;justify-content:space-between;">
+  //       <span>Guest ID</span>
+  //       <span>${guestId}</span>
+  //     </div>
+  //     <div style="display:flex;justify-content:space-between;">
+  //       <span>Check-in</span>
+  //       <span>${checkInDate}</span>
+  //     </div>
+  //     <div style="display:flex;justify-content:space-between;">
+  //       <span>Check-out</span>
+  //       <span>${checkOutDate}</span>
+  //     </div>
+  //     <div style="display:flex;justify-content:space-between;margin-bottom:15px;">
+  //       <span>Nights</span>
+  //       <span>${nights}</span>
+  //     </div>
 
-      <hr/>
+  //     <hr/>
 
-      ${roomsHTML}
-      ${activitiesHTML}
+  //     ${roomsHTML}
+  //     ${activitiesHTML}
 
-      <hr/>
+  //     <hr/>
 
-      <h3>Payment Summary</h3>
+  //     <h3>Payment Summary</h3>
 
-      <div style="display:flex;justify-content:space-between;">
-        <span>Room & Add-ons</span>
-        <span>₹${formatINR(roomTotal + activityTotal + extraGuestTotal)}</span>
-      </div>
+  //     <div style="display:flex;justify-content:space-between;">
+  //       <span>Room & Add-ons</span>
+  //       <span>₹${formatINR(roomTotal + activityTotal + extraGuestTotal)}</span>
+  //     </div>
 
-      ${discountHTML}
+  //     ${discountHTML}
 
-      <div style="display:flex;justify-content:space-between;font-size:18px;font-weight:bold;margin-top:10px;">
-        <span>Final Amount</span>
-        <span>₹${formatINR(grandTotal)}</span>
-      </div>
+  //     <div style="display:flex;justify-content:space-between;font-size:18px;font-weight:bold;margin-top:10px;">
+  //       <span>Final Amount</span>
+  //       <span>₹${formatINR(grandTotal)}</span>
+  //     </div>
 
-      <div style="margin-top:15px;padding:10px;background:#f1f8ff;border-radius:6px;">
-        <div style="display:flex;justify-content:space-between;">
-          <span>Payment Type</span>
-          <span>${paymentType === "PARTIAL" ? "Partial Payment" : "Full Payment"}</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;">
-          <span>Paid</span>
-          <span>₹${formatINR(paidAmount)}</span>
-        </div>
-        ${
-          pendingAmount > 0
-            ? `
-          <div style="display:flex;justify-content:space-between;">
-            <span>Remaining</span>
-            <span>₹${formatINR(pendingAmount)}</span>
-          </div>
-        `
-            : ""
-        }
-      </div>
+  //     <div style="margin-top:15px;padding:10px;background:#f1f8ff;border-radius:6px;">
+  //       <div style="display:flex;justify-content:space-between;">
+  //         <span>Payment Type</span>
+  //         <span>${paymentType === "PARTIAL" ? "Partial Payment" : "Full Payment"}</span>
+  //       </div>
+  //       <div style="display:flex;justify-content:space-between;">
+  //         <span>Paid</span>
+  //         <span>₹${formatINR(paidAmount)}</span>
+  //       </div>
+  //       ${
+  //         pendingAmount > 0
+  //           ? `
+  //         <div style="display:flex;justify-content:space-between;">
+  //           <span>Remaining</span>
+  //           <span>₹${formatINR(pendingAmount)}</span>
+  //         </div>
+  //       `
+  //           : ""
+  //       }
+  //     </div>
 
-      <hr/>
+  //     <hr/>
 
-      <p>If you need assistance, contact us:</p>
-      <p><b>Phone:</b> ${system.systemPhoneNumbers?.[0] || "N/A"}</p>
-      <p><b>Email:</b> ${system.systemEmails?.[0] || ""}</p>
+  //     <p>If you need assistance, contact us:</p>
+  //     <p><b>Phone:</b> ${system.systemPhoneNumbers?.[0] || "N/A"}</p>
+  //     <p><b>Email:</b> ${system.systemEmails?.[0] || ""}</p>
 
-      <p style="margin-top:20px;">Regards,<br/><b>${system.systemHotelName}</b></p>
-      <p style="font-size:12px;color:#777;text-align:center;">
-        This is an automated email. Please do not reply.
-      </p>
+  //     <p style="margin-top:20px;">Regards,<br/><b>${system.systemHotelName}</b></p>
+  //     <p style="font-size:12px;color:#777;text-align:center;">
+  //       This is an automated email. Please do not reply.
+  //     </p>
 
+  //   </div>
+  // </div>
+  // `;
+
+const htmlContent = `
+<div style="font-family:Arial,sans-serif;background:#f6f6f6;padding:20px;">
+  <div style="max-width:700px;margin:auto;background:#ffffff;padding:30px;border-radius:10px;">
+
+    <div style="text-align:center;margin-bottom:20px;">
+      ${
+        system.logo
+          ? `<img src="${system.logo}" style="max-height:80px;margin-bottom:10px;" />`
+          : ""
+      }
+      <h2>${system.systemHotelName}</h2>
+      <p style="color:#666;">Booking Confirmation</p>
     </div>
+
+    <p>Hello <b>${name}</b>,</p>
+    <p>Your booking has been successfully confirmed. Below are your booking and payment details.</p>
+
+    <hr/>
+
+    <h3>Booking Details</h3>
+    <div style="display:flex;justify-content:space-between;"><span>Reference</span><b>${bookingReference}</b></div>
+    <div style="display:flex;justify-content:space-between;"><span>Guest ID</span><span>${guestId}</span></div>
+    <div style="display:flex;justify-content:space-between;"><span>Check-in</span><span>${checkInDate}</span></div>
+    <div style="display:flex;justify-content:space-between;"><span>Check-out</span><span>${checkOutDate}</span></div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:15px;"><span>Nights</span><span>${nights}</span></div>
+
+    <hr/>
+
+    ${rooms.length > 0 ? `
+      <h3>Room Charges</h3>
+      ${rooms.map(r => `
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+          <span>${r.name} (${r.plan?.toUpperCase()}) × ${r.quantity}</span>
+          <span>₹${formatINR(r.totalPrice)}</span>
+        </div>
+      `).join("")}
+      <div style="display:flex;justify-content:space-between;font-weight:bold;margin-top:8px;">
+        <span>Total Room Price</span>
+        <span>₹${formatINR(roomTotal)}</span>
+      </div>
+      <hr/>
+    ` : ""}
+
+    ${activities.length > 0 ? `
+      <h3>Activities Charges</h3>
+      ${activities.map(a => `
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+          <span>${a.name} × ${a.quantity}</span>
+          <span>₹${formatINR(a.totalPrice)}</span>
+        </div>
+      `).join("")}
+      <div style="display:flex;justify-content:space-between;font-weight:bold;margin-top:8px;">
+        <span>Total Activities Price</span>
+        <span>₹${formatINR(activityTotal)}</span>
+      </div>
+      <hr/>
+    ` : ""}
+
+    ${extraGuestTotal > 0 ? `
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+        <span>Extra Guest Charges</span>
+        <span>₹${formatINR(extraGuestTotal)}</span>
+      </div>
+      <hr/>
+    ` : ""}
+
+    <h3>Discounts</h3>
+    ${membershipDiscount > 0 ? `
+      <div style="display:flex;justify-content:space-between;color:green;">
+        <span>Membership Discount</span>
+        <span>- ₹${formatINR(membershipDiscount)}</span>
+      </div>
+    ` : ""}
+
+    ${coupon?.discountAmount > 0 ? `
+      <div style="display:flex;justify-content:space-between;color:green;">
+        <span>Coupon (${coupon.code})</span>
+        <span>- ₹${formatINR(coupon.discountAmount)}</span>
+      </div>
+    ` : ""}
+
+    <hr/>
+
+    <h3>Final Payment Summary</h3>
+    <div style="display:flex;justify-content:space-between;font-size:18px;font-weight:bold;">
+      <span>Grand Total</span>
+      <span>₹${formatINR(grandTotal)}</span>
+    </div>
+
+    <div style="margin-top:15px;padding:12px;background:#f1f8ff;border-radius:6px;">
+      <div style="display:flex;justify-content:space-between;">
+        <span>Payment Type</span>
+        <span>${paymentType === "PARTIAL" ? "Partial Payment" : "Full Payment"}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;">
+        <span>Paid Amount</span>
+        <span>₹${formatINR(paidAmount)}</span>
+      </div>
+      ${pendingAmount > 0 ? `
+        <div style="display:flex;justify-content:space-between;">
+          <span>Pending Amount</span>
+          <span>₹${formatINR(pendingAmount)}</span>
+        </div>
+      ` : ""}
+    </div>
+
+    <hr/>
+
+    <p><b>Need Help?</b></p>
+    <p><b>Phone:</b> ${system.systemPhoneNumbers?.[0] || "N/A"}</p>
+    <p><b>Email:</b> ${system.systemEmails?.[0] || "N/A"}</p>
+
+    <p style="margin-top:20px;">Regards,<br/><b>${system.systemHotelName}</b></p>
+
+    <p style="font-size:12px;color:#777;text-align:center;">
+      This is an automated email. Please do not reply.
+    </p>
+
   </div>
-  `;
+</div>
+`;
+
 
   await transactionalEmailApi.sendTransacEmail({
     sender: {
