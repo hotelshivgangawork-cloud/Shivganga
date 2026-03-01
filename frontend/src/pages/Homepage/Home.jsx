@@ -49,7 +49,7 @@ export default function Home() {
       {/* HERO SECTION */}
       <div
         ref={heroRef}
-        className="relative min-h-[80vh] md:min-h-[85vh] lg:min-h-[95vh] overflow-hidden pt-[90px]"
+        className="relative min-h-[80vh] md:min-h-[85vh] lg:min-h-[95vh] overflow-hidden pt-[120px]"
       >
         {/* Background */}
         <motion.div
