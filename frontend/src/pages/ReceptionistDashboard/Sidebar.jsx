@@ -284,11 +284,10 @@ const Sidebar = ({ children }) => {
           >
             <div
               className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 group cursor-pointer
-                        ${
-                          isActive
-                            ? "bg-gradient-to-r from-[#0f172a] to-[#1e293b] text-white shadow-md shadow-slate-900/20 scale-[1.02] ring-1 ring-white/10"
-                            : "text-slate-500 hover:bg-slate-50/80 hover:text-[#0f172a]"
-                        }`}
+                        ${isActive
+                  ? "bg-gradient-to-r from-[#0f172a] to-[#1e293b] text-white shadow-md shadow-slate-900/20 scale-[1.02] ring-1 ring-white/10"
+                  : "text-slate-500 hover:bg-slate-50/80 hover:text-[#0f172a]"
+                }`}
             >
               <span
                 className={`flex items-center justify-center w-5 h-5 transition-colors ${isActive ? "text-[#D4AF37]" : "text-slate-400 group-hover:text-[#D4AF37]"}`}
@@ -311,11 +310,11 @@ const Sidebar = ({ children }) => {
   const DesktopSidebarContent = () => (
     <div className="flex flex-col h-full bg-gradient-to-b from-white to-slate-50/80 text-slate-800 font-sans shadow-[4px_0_30px_-10px_rgba(0,0,0,0.05)] z-50">
       <div className="h-28 flex items-center justify-center border-b border-slate-100/50 px-6">
-         <img
-                           src={logo}
-                           alt="Shiv Ganga"
-                           className="h-12 sm:h-14 md:h-22 lg:h-24 rounded-2xl mt-4 object-contain"
-                         />
+        <img
+          src={logo}
+          alt="Shiv Ganga"
+          className="h-12 sm:h-14 md:h-22 lg:h-24 rounded-2xl mt-4 object-contain"
+        />
       </div>
 
       <div className="flex-1 px-4 py-6 overflow-hidden flex flex-col">
@@ -368,13 +367,12 @@ const Sidebar = ({ children }) => {
               <div className="mb-5">
                 <span
                   className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider mb-3 shadow-sm
-                            ${
-                              selectedNotification.type === "booking"
-                                ? "bg-blue-50 text-blue-700 border border-blue-100"
-                                : selectedNotification.type === "payment"
-                                  ? "bg-green-50 text-green-700 border border-green-100"
-                                  : "bg-orange-50 text-orange-700 border border-orange-100"
-                            }`}
+                            ${selectedNotification.type === "booking"
+                      ? "bg-blue-50 text-blue-700 border border-blue-100"
+                      : selectedNotification.type === "payment"
+                        ? "bg-green-50 text-green-700 border border-green-100"
+                        : "bg-orange-50 text-orange-700 border border-orange-100"
+                    }`}
                 >
                   {selectedNotification.type === "booking" && (
                     <CalendarDays size={10} />
@@ -395,9 +393,40 @@ const Sidebar = ({ children }) => {
               <div className="bg-slate-50/80 p-5 rounded-2xl border border-slate-100/80 mb-6">
                 <p className="text-slate-600 text-sm leading-relaxed">
                   {selectedNotification.booking && (
+                    // <>
+                    // {console.log(selectedNotification.booking)}
+                    //   Room: {selectedNotification.booking.room?.name} (
+                    //   {selectedNotification.booking.room?.roomNumber}) <br />
+                    //   <p>
+                    //     <b>Guest:</b>{" "}
+                    //     {selectedNotification.booking.user?.firstName
+                    //       ? `${selectedNotification.booking.user.firstName} ${selectedNotification.booking.user.lastName || ""}`.trim()
+                    //       : selectedNotification.guest?.firstName
+                    //         ? `${selectedNotification.guest.firstName} ${selectedNotification.guest.lastName || ""}`.trim()
+                    //         : (selectedNotification.message || "")
+                    //             .match(/Guest:\s*([^\n]+)/)?.[1]
+                    //             ?.trim() || "Unknown"}
+                    //   </p>
+                    //   Status: {selectedNotification.booking.bookingStatus}{" "}
+                    //   <br />
+                    //   Payment: {selectedNotification.booking.paymentStatus}{" "}
+                    //   <br />
+                    //   Paid: ₹{selectedNotification.booking.paidAmount} / ₹
+                    //   {selectedNotification.booking.totalAmount} <br />
+                    //   Remaining: ₹
+                    //   {selectedNotification.booking.totalAmount -
+                    //     selectedNotification.booking.paidAmount}
+                    // </>
                     <>
-                      Room: {selectedNotification.booking.room?.name} (
-                      {selectedNotification.booking.room?.roomNumber}) <br />
+                      <p>
+                        <b>Room:</b>{" "}
+                        {selectedNotification.booking.rooms
+                          ?.map(
+                            (r) => `${r.room?.name || "N/A"} (${r.room?.roomNumber || "N/A"})`
+                          )
+                          .join(", ")}
+                      </p>
+
                       <p>
                         <b>Guest:</b>{" "}
                         {selectedNotification.booking.user?.firstName
@@ -405,18 +434,34 @@ const Sidebar = ({ children }) => {
                           : selectedNotification.guest?.firstName
                             ? `${selectedNotification.guest.firstName} ${selectedNotification.guest.lastName || ""}`.trim()
                             : (selectedNotification.message || "")
-                                .match(/Guest:\s*([^\n]+)/)?.[1]
-                                ?.trim() || "Unknown"}
+                              .match(/Guest:\s*([^\n]+)/)?.[1]
+                              ?.trim() || "Unknown"}
                       </p>
-                      Status: {selectedNotification.booking.bookingStatus}{" "}
-                      <br />
-                      Payment: {selectedNotification.booking.paymentStatus}{" "}
-                      <br />
-                      Paid: ₹{selectedNotification.booking.paidAmount} / ₹
-                      {selectedNotification.booking.totalAmount} <br />
-                      Remaining: ₹
-                      {selectedNotification.booking.totalAmount -
-                        selectedNotification.booking.paidAmount}
+
+                      <p>
+                        <b>Status:</b> {selectedNotification.booking.bookingStatus}
+                      </p>
+
+                      <p>
+                        <b>Payment:</b> {selectedNotification.booking.paymentStatus}
+                      </p>
+
+                      <p>
+                        <b>Paid:</b> ₹{selectedNotification.booking.paidAmount} / ₹
+                        {selectedNotification.booking.totalAmount}
+                      </p>
+
+                      <p>
+                        <b>Remaining:</b> ₹
+                        {selectedNotification.booking.totalAmount -
+                          selectedNotification.booking.paidAmount - selectedNotification.booking.membershipDiscount
+                        }
+                      </p>
+                      {/* <p>
+                        <b>Membership Discount:</b> ₹
+                        {selectedNotification.booking.membershipDiscount
+                        }
+                      </p> */}
                     </>
                   )}
                 </p>
@@ -488,10 +533,10 @@ const Sidebar = ({ children }) => {
           </button>
           <div className="h-14 w-auto">
             <img
-                              src={logo}
-                              alt="Shiv Ganga"
-                              className="h-24 sm:h-10 md:h-14 lg:h-16 rounded-2xl object-contain"
-                            />
+              src={logo}
+              alt="Shiv Ganga"
+              className="h-24 sm:h-10 md:h-14 lg:h-16 rounded-2xl object-contain"
+            />
           </div>
           <button
             onClick={handleLogout}
@@ -511,11 +556,10 @@ const Sidebar = ({ children }) => {
           className={`
                 flex items-center justify-between px-4 md:px-8 
                 sticky top-0 z-40 shrink-0 gap-6 transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1)
-                ${
-                  isScrolled
-                    ? "h-18 bg-white/70 backdrop-blur-2xl border-b border-white/40 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] supports-[backdrop-filter]:bg-white/60"
-                    : "h-24 bg-transparent border-b border-transparent"
-                }
+                ${isScrolled
+              ? "h-18 bg-white/70 backdrop-blur-2xl border-b border-white/40 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] supports-[backdrop-filter]:bg-white/60"
+              : "h-24 bg-transparent border-b border-transparent"
+            }
             `}
         >
           <div className="flex items-center gap-4 flex-1 min-w-0">
@@ -549,13 +593,12 @@ const Sidebar = ({ children }) => {
                 onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
                 className={`
                         relative p-3 rounded-full transition-all duration-300 group
-                        ${
-                          isNotificationsOpen
-                            ? "bg-[#D4AF37] text-white shadow-lg shadow-[#D4AF37]/30 scale-110"
-                            : isScrolled
-                              ? "bg-white/80 text-slate-600 hover:text-[#D4AF37] shadow-sm hover:shadow-[0_4px_12px_-2px_rgba(212,175,55,0.2)] backdrop-blur-md"
-                              : "bg-white/60 text-slate-600 hover:bg-white hover:text-[#D4AF37] hover:shadow-md backdrop-blur-sm"
-                        }
+                        ${isNotificationsOpen
+                    ? "bg-[#D4AF37] text-white shadow-lg shadow-[#D4AF37]/30 scale-110"
+                    : isScrolled
+                      ? "bg-white/80 text-slate-600 hover:text-[#D4AF37] shadow-sm hover:shadow-[0_4px_12px_-2px_rgba(212,175,55,0.2)] backdrop-blur-md"
+                      : "bg-white/60 text-slate-600 hover:bg-white hover:text-[#D4AF37] hover:shadow-md backdrop-blur-sm"
+                  }
                     `}
               >
                 <Bell
@@ -637,11 +680,10 @@ const Sidebar = ({ children }) => {
               <div
                 className={`
                     flex items-center gap-3 cursor-pointer p-1.5 pr-4 rounded-full transition-all duration-300 group
-                    ${
-                      isScrolled
-                        ? "bg-white/80 border border-slate-100 shadow-sm hover:border-[#D4AF37]/50 hover:shadow-[0_4px_12px_-2px_rgba(212,175,55,0.15)] backdrop-blur-md"
-                        : "bg-white/40 border border-white/40 hover:bg-white/80 hover:shadow-sm backdrop-blur-sm"
-                    }
+                    ${isScrolled
+                    ? "bg-white/80 border border-slate-100 shadow-sm hover:border-[#D4AF37]/50 hover:shadow-[0_4px_12px_-2px_rgba(212,175,55,0.15)] backdrop-blur-md"
+                    : "bg-white/40 border border-white/40 hover:bg-white/80 hover:shadow-sm backdrop-blur-sm"
+                  }
                 `}
               >
                 <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#D4AF37] to-[#8a701e] p-[2px] shadow-md group-hover:scale-105 transition-transform duration-300 ring-2 ring-white">
