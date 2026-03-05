@@ -92,6 +92,66 @@ import BookingPolicy from "../models/BookingPolicy.model.js";
 //     next(error);
 //   }
 // };
+// export const roomCheckIn = async (req, res, next) => {
+//   try {
+//     const { roomId } = req.params;
+
+//     if (!roomId) {
+//       return res.status(400).json({
+//         message: "RoomId is not provided"
+//       });
+//     }
+
+//     const startOfToday = new Date();
+//     startOfToday.setHours(0, 0, 0, 0);
+
+//     const endOfToday = new Date();
+//     endOfToday.setHours(23, 59, 59, 999);
+
+//     const booking = await Booking.findOne({
+//       "rooms.room": roomId,
+//       bookingStatus: "confirmed",
+//       isCheckedIn: false,
+//       checkInDate: { $lte: endOfToday },
+//       checkOutDate: { $gt: startOfToday }
+//     });
+
+//     if (!booking) {
+//       return res.status(400).json({
+//         data: roomId,
+//         message: "No valid booking found for today❌"
+//       });
+//     }
+
+//     // FULL payment rule
+//     if (
+//       booking.paymentType === "FULL" &&
+//       booking.paymentStatus !== "paid"
+//     ) {
+//       return res.status(400).json({
+//         message: "Full payment required before check-in"
+//       });
+//     }
+//     if (booking.isCheckedIn) {
+//       return res.status(400).json({
+//         message: "Guest already checked in"
+//       });
+//     }
+
+//     booking.isCheckedIn = true;
+//     booking.checkedInAt = new Date();
+//     await booking.save();
+
+//     res.json({
+//       success: true,
+//       message: "Guest checked in successfully",
+//       booking
+//     });
+//   } catch (error) {
+//     next(error);
+//   }
+// };
+
 export const roomCheckIn = async (req, res, next) => {
   try {
     const { roomId } = req.params;
@@ -103,7 +163,7 @@ export const roomCheckIn = async (req, res, next) => {
     endOfToday.setHours(23, 59, 59, 999);
 
     const booking = await Booking.findOne({
-      room: roomId,
+      "rooms.room": roomId,
       bookingStatus: "confirmed",
       isCheckedIn: false,
       checkInDate: { $lte: endOfToday },
@@ -116,23 +176,9 @@ export const roomCheckIn = async (req, res, next) => {
       });
     }
 
-    // FULL payment rule
-    if (
-      booking.paymentType === "FULL" &&
-      booking.paymentStatus !== "paid"
-    ) {
-      return res.status(400).json({
-        message: "Full payment required before check-in"
-      });
-    }
-    if (booking.isCheckedIn) {
-      return res.status(400).json({
-        message: "Guest already checked in"
-      });
-    }
-
     booking.isCheckedIn = true;
     booking.checkedInAt = new Date();
+
     await booking.save();
 
     res.json({
@@ -140,6 +186,7 @@ export const roomCheckIn = async (req, res, next) => {
       message: "Guest checked in successfully",
       booking
     });
+
   } catch (error) {
     next(error);
   }
@@ -154,8 +201,13 @@ export const roomCheckOut = async (req, res, next) => {
       return res.status(404).json({ success: false, message: "Room not found" });
     }
 
+    // const booking = await Booking.findOne({
+    //   room: roomId,
+    //   isCheckedIn: true,
+    //   isCheckedOut: false
+    // })
     const booking = await Booking.findOne({
-      room: roomId,
+      "rooms.room": roomId,
       isCheckedIn: true,
       isCheckedOut: false
     }).populate("user rooms.room");

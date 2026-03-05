@@ -148,6 +148,10 @@ const bookingSchema = new mongoose.Schema(
         default: "PENDING",
       },
     },
+    membershipDiscount: {
+      type: Number,
+      default: 0
+    },
     priceBreakdown: {
       roomTotal: Number,
       serviceFee: Number,

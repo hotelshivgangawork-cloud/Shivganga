@@ -181,20 +181,80 @@ export const getOccupancyTrends = async (req, res) => {
   });
 };
 
+// export const getRecentActivities = async (req, res) => {
+//   const bookings = await Booking.find({ bookingStatus: "confirmed" })
+//     .sort({ updatedAt: -1 })
+//     .limit(10)
+//     .populate("rooms.room", "name roomNumber")
+//     .populate("user", "firstName lastName");
+
+//   let activities = [];
+
+//   bookings.forEach((b) => {
+//     const base = {
+//       room: b.rooms
+//         .map(r => `${r.room?.name} · Room ${r.room?.roomNumber}`)
+//         .join(", "),
+//       user: `${b.user.firstName} ${b.user.lastName}`,
+//     };
+
+//     // 🆕 Booking Created
+//     activities.push({
+//       type: "BOOKING",
+//       title: "New Booking",
+//       description: base.room,
+//       user: base.user,
+//       amount: b.totalAmount,
+//       createdAt: b.createdAt,
+//     });
+
+//     // ✅ Guest Checked In
+//     if (b.isCheckedIn) {
+//       activities.push({
+//         type: "CHECK_IN",
+//         title: "Guest Checked In",
+//         description: base.room,
+//         user: base.user,
+//         icon: "checkin",
+//         createdAt: b.checkedInAt,
+//       });
+//     }
+
+//     // 🚪 Guest Checked Out
+//     if (b.isCheckedOut) {
+//       activities.push({
+//         type: "CHECK_OUT",
+//         title: "Guest Checked Out",
+//         description: base.room,
+//         user: base.user,
+//         icon: "checkout",
+//         createdAt: b.checkedOutAt,
+//       });
+//     }
+//   });
+
+//   // Latest activity first
+//   activities.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+//   res.json({
+//     success: true,
+//     activities: activities.slice(0, 10),
+//   });
+// };
+
+// 4 march 11.58 pm
 export const getRecentActivities = async (req, res) => {
   const bookings = await Booking.find({ bookingStatus: "confirmed" })
     .sort({ updatedAt: -1 })
     .limit(10)
-    .populate("rooms.room", "name roomNumber")
+    .populate("room", "name roomNumber")
     .populate("user", "firstName lastName");
 
   let activities = [];
 
   bookings.forEach((b) => {
     const base = {
-      room: b.rooms
-        .map(r => `${r.room?.name} · Room ${r.room?.roomNumber}`)
-        .join(", "),
+      room: `${b.room.name} · Room ${b.room.roomNumber}`,
       user: `${b.user.firstName} ${b.user.lastName}`,
     };
 

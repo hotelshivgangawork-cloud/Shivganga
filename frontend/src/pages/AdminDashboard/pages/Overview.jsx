@@ -32,12 +32,25 @@ const highlights = [
 
 const topRooms = [];
 
+// const formatINRShort = (num) => {
+//   if (!num || isNaN(num)) return "₹ 0";
+//   if (num >= 10000000) return `₹ ${(num / 10000000).toFixed(1)}Cr`;
+//   if (num >= 100000) return `₹ ${(num / 100000).toFixed(1)}L`;
+//   if (num >= 1000) return `₹ ${(num / 1000).toFixed(1)}K`;
+//   return `₹ ${num}`;
+// };
+
+// 4 march 11.58 pm
 const formatINRShort = (num) => {
   if (!num || isNaN(num)) return "₹ 0";
-  if (num >= 10000000) return `₹ ${(num / 10000000).toFixed(1)}Cr`;
-  if (num >= 100000) return `₹ ${(num / 100000).toFixed(1)}L`;
-  if (num >= 1000) return `₹ ${(num / 1000).toFixed(1)}K`;
-  return `₹ ${num}`;
+  const numStr = Math.round(num).toString();
+  const lastThree = numStr.substring(numStr.length - 3);
+  const otherNumbers = numStr.substring(0, numStr.length - 3);
+  if (otherNumbers !== '') {
+    return `₹ ${otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",")},${lastThree}`;
+  } else {
+    return `₹ ${lastThree}`;
+  }
 };
 
 /* ================= MOTION PRESET ================= */
@@ -216,25 +229,73 @@ export default function Overview() {
           const list = Array.isArray(bookingsRes.data?.data)
             ? bookingsRes.data.data
             : [];
+          // const recentBookings = list
+          //   .slice()
+          //   .sort((a, b) => {
+          //     const ta = new Date(
+          //       a.createdAt || a.updatedAt || a.checkInDate,
+          //     ).getTime();
+          //     const tb = new Date(
+          //       b.createdAt || b.updatedAt || b.checkInDate,
+          //     ).getTime();
+          //     return tb - ta;
+          //   })
+          //   .slice(0, 10)
+          //   .map((b, i) => ({
+          //     id: b.guestId || `BK-${i + 1}`,
+          //     name: `${b.user?.firstName || ""} ${b.user?.lastName || ""}`.trim(),
+          //     room: `${b.room?.name || ""} · Room ${b.room?.roomNumber || ""}`.trim(),
+          //     amount: formatINRShort(b.totalAmount || 0),
+          //     status: b.bookingStatus || "confirmed",
+          //   }));
+
+          // 4 march 11.59 pm
           const recentBookings = list
             .slice()
             .sort((a, b) => {
               const ta = new Date(
-                a.createdAt || a.updatedAt || a.checkInDate,
+                a.createdAt || a.updatedAt || a.checkInDate
               ).getTime();
               const tb = new Date(
-                b.createdAt || b.updatedAt || b.checkInDate,
+                b.createdAt || b.updatedAt || b.checkInDate
               ).getTime();
               return tb - ta;
             })
             .slice(0, 10)
-            .map((b, i) => ({
-              id: b.guestId || `BK-${i + 1}`,
-              name: `${b.user?.firstName || ""} ${b.user?.lastName || ""}`.trim(),
-              room: `${b.room?.name || ""} · Room ${b.room?.roomNumber || ""}`.trim(),
-              amount: formatINRShort(b.totalAmount || 0),
-              status: b.bookingStatus || "confirmed",
-            }));
+            .map((b) => {
+              // Get room names properly from the rooms array
+              let roomNames = "Room not specified";
+              
+              if (b.rooms && Array.isArray(b.rooms) && b.rooms.length > 0) {
+                roomNames = b.rooms
+                  .map(r => {
+                    // Check if room data exists and has name
+                    if (r.room && r.room.name) {
+                      return r.room.roomNumber 
+                        ? `${r.room.name} - Room ${r.room.roomNumber}`
+                        : r.room.name;
+                    }
+                    return null;
+                  })
+                  .filter(name => name !== null)
+                  .join(", ");
+              }
+              
+              // If still no room names, try the old structure as fallback
+              if (roomNames === "Room not specified" && b.room) {
+                roomNames = b.room.roomNumber 
+                  ? `${b.room.name || "Room"} - Room ${b.room.roomNumber}`
+                  : b.room.name || "Room not specified";
+              }
+
+              return {
+                id: b.guestId || b._id || "N/A",
+                name: `${b.user?.firstName || ""} ${b.user?.lastName || ""}`.trim() || "Guest",
+                room: roomNames,
+                amount: formatINRShort(b.totalAmount || 0),
+                status: b.bookingStatus === "confirmed" ? "Confirmed" : b.bookingStatus || "Pending",
+              };
+            });
           setRecent(recentBookings);
         }
 

@@ -8,11 +8,19 @@ export default function BookingCalendar() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
+  // 4 march
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 10;
 
   // 1. DATA LINKING: Fetching Bookings from Backend
   useEffect(() => {
     fetchBookings();
   }, []);
+
+  // 4 march
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, statusFilter]);
 
   const fetchBookings = async () => {
     try {
@@ -20,6 +28,7 @@ export default function BookingCalendar() {
       const res = await api.get("/admin/bookings");
       if (res.data.success) {
         setBookings(res.data.data);
+        setCurrentPage(1); // 4 march
       }
     } catch (err) {
       console.error("Fetch error:", err);
@@ -57,6 +66,21 @@ export default function BookingCalendar() {
       return tb - ta; // recent first
     });
   }, [bookings, search, statusFilter]);
+
+  // 4 march
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredBookings.length / ITEMS_PER_PAGE),
+  );
+
+  const paginatedBookings = useMemo(
+    () =>
+      filteredBookings.slice(
+        (currentPage - 1) * ITEMS_PER_PAGE,
+        currentPage * ITEMS_PER_PAGE,
+      ),
+    [filteredBookings, currentPage],
+  );
 
   const statusBadgeClass = (status) => {
     if (status === "paid")
@@ -138,7 +162,7 @@ export default function BookingCalendar() {
                 </tr>
               </thead>
               <tbody>
-                {filteredBookings.map((b) => (
+                {paginatedBookings.map((b) => (
                   <tr
                     key={b._id}
                     className="border-t border-gray-200 hover:bg-gray-50/50"
@@ -154,7 +178,13 @@ export default function BookingCalendar() {
                     </td>
 
                     {/* Room */}
-                    <td className="px-4 py-3 text-sm">{b.room?.roomNumber}</td>
+                    <td className="px-4 py-3 text-sm">
+                      {b.rooms && b.rooms.length > 0 
+                        ? b.rooms.map(r => 
+                            `${r.room?.name || 'Room'} ${r.room?.roomNumber ? `- ${r.room.roomNumber}` : ''}`
+                          ).join(", ")
+                        : "—"}
+                    </td>
 
                     {/* Date */}
                     <td className="px-4 py-3 text-sm">
@@ -206,7 +236,7 @@ export default function BookingCalendar() {
             <div className="p-8 text-center text-gray-500">No bookings found</div>
           ) : (
             <div className="p-3 space-y-3">
-              {filteredBookings.map((b) => (
+              {paginatedBookings.map((b) => (
                 <div key={b._id} className="bg-white border border-gray-200 rounded-xl p-3 shadow-sm">
                   <div className="flex items-start justify-between gap-3">
                     <div>
@@ -225,7 +255,13 @@ export default function BookingCalendar() {
                   <div className="mt-2 grid grid-cols-2 gap-3">
                     <div>
                       <div className="text-[10px] uppercase tracking-widest text-gray-400">Room</div>
-                      <div className="text-sm text-gray-700">{b.room?.roomNumber || "—"}</div>
+                      <div className="text-sm text-gray-700">
+                        {b.rooms && b.rooms.length > 0 
+                          ? b.rooms.map(r => 
+                              `${r.room?.name || 'Room'} ${r.room?.roomNumber ? `- ${r.room.roomNumber}` : ''}`
+                            ).join(", ")
+                          : "—"}
+                      </div>
                     </div>
                     <div>
                       <div className="text-[10px] uppercase tracking-widest text-gray-400">Date</div>
@@ -251,6 +287,46 @@ export default function BookingCalendar() {
             </div>
           )}
         </div>
+        
+        {/* 4 march */}
+        {/* Pagination */}
+        {!loading && filteredBookings.length > 0 && (
+          <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200 text-xs text-gray-400">
+            
+            <span>
+              Page {currentPage} of {totalPages} • {filteredBookings.length} bookings
+            </span>
+
+            <div className="flex gap-2">
+              <button
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className={`px-3 py-1 rounded-xl border text-xs font-semibold uppercase tracking-widest ${
+                  currentPage === 1
+                    ? "border-gray-200 text-gray-300 cursor-not-allowed"
+                    : "border-gray-300 text-gray-600 hover:bg-gray-50"
+                }`}
+              >
+                Previous
+              </button>
+
+              <button
+                onClick={() =>
+                  setCurrentPage((p) => Math.min(totalPages, p + 1))
+                }
+                disabled={currentPage === totalPages}
+                className={`px-3 py-1 rounded-xl border text-xs font-semibold uppercase tracking-widest ${
+                  currentPage === totalPages
+                    ? "border-gray-200 text-gray-300 cursor-not-allowed"
+                    : "border-gray-300 text-gray-600 hover:bg-gray-50"
+                }`}
+              >
+                Next
+              </button>
+            </div>
+
+          </div>
+        )}
       </div>
     </Motion.div>
   );
