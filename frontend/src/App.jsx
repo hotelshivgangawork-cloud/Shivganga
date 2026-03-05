@@ -77,7 +77,7 @@ export default function App() {
             <Route path="tariff" element={<Tariff />} />
             <Route path="attractions" element={<Attractions />} />
             <Route path="attractions/:id" element={<AttractionDetailsNew />} />
-            <Route path="auth/login" element={<LoginPage />} />
+            {/* <Route path="auth/login" element={<LoginPage />} /> */}
             <Route path="privacypolicy" element={<Privacy />} />
             <Route path="cancellationpolicy" element={<Cancellation />} />
             <Route path="terms-of-servicespolicy" element={<Terms />} />
@@ -131,6 +131,7 @@ export default function App() {
           {/* ================= MISC ================= */}
           <Route path="/unauthorized" element={<Unauthorized />} />
           <Route path="*" element={<NotFound />} />
+          <Route path="auth/login" element={<LoginPage />} />
         </Routes>
       </BrowserRouter>
     </SystemSettingsProvider>
