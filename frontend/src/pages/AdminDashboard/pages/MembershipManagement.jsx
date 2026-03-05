@@ -38,14 +38,14 @@ export default function MembershipManagement() {
     try {
       const res = await api.get("/membership/active");
       setMembership(res.data?.data || null);
-    } catch {}
+    } catch { }
   };
 
   const fetchMembers = async () => {
     try {
       const res = await api.get("/membership/members");
       setMembers(res.data?.data || []);
-    } catch {}
+    } catch { }
   };
 
   const handleCreate = async () => {
@@ -261,7 +261,7 @@ export default function MembershipManagement() {
 
       {/* MEMBERS LIST */}
       <div className="bg-white border rounded-2xl p-6 shadow-sm">
-        
+
         <h2 className="text-lg font-bold flex items-center gap-2 mb-4">
           <Users /> Members ({members.length})
         </h2>
@@ -273,12 +273,12 @@ export default function MembershipManagement() {
         ) : (
           <div className="space-y-3">
             {/* TABLE HEADINGS */}
-<div className="hidden md:grid grid-cols-4 gap-3 px-4 pb-2 mb-2 border-b text-[11px] font-bold uppercase tracking-widest text-slate-400">
-  <div>Name</div>
-  <div>Email</div>
-  <div>Phone</div>
-  <div>Joined On</div>
-</div>
+            <div className="hidden md:grid grid-cols-4 gap-3 px-4 pb-2 mb-2 border-b text-[11px] font-bold uppercase tracking-widest text-slate-400">
+              <div>Name</div>
+              <div>Email</div>
+              <div>Phone</div>
+              <div>Joined On</div>
+            </div>
 
             {members.map((m) => (
               <div

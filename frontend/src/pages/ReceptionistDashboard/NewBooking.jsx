@@ -55,13 +55,13 @@ const ACTIVITIES = [
   },
 ];
 
-const API = axios.create({
-  baseURL: "https://shiv-ganga-3.onrender.com/api",
-});
-
 // const API = axios.create({
-//   baseURL: "http://localhost:5001/api",
+//   baseURL: "https://shiv-ganga-3.onrender.com/api",
 // });
+
+const API = axios.create({
+  baseURL: "http://localhost:5001/api",
+});
 
 const NewBooking = () => {
   const [rooms, setRooms] = useState([]);

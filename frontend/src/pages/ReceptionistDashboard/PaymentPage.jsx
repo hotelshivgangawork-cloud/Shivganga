@@ -60,13 +60,13 @@ const PaymentPage = () => {
   const navigate = useNavigate();
 
   // 3. FIX: Define API locally to guarantee it works and attaches the token
-  const API = axios.create({
-    baseURL: "https://shiv-ganga-3.onrender.com/api",
-  });
-
   // const API = axios.create({
-  //   baseURL: "http://localhost:5001/api",
+  //   baseURL: "https://shiv-ganga-3.onrender.com/api",
   // });
+
+  const API = axios.create({
+    baseURL: "http://localhost:5001/api",
+  });
 
   // 4. Token Interceptor (Fixes 401 Unauthorized)
   API.interceptors.request.use((req) => {
