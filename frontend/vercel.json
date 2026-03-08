@@ -36,7 +36,7 @@
   ],
   
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "https://shiv-ganga-3.onrender.com/api/$1" },
+    { "source": "/api/(.*)", "destination": "https://shivganga.onrender.com/api/$1" },
 
     { "source": "/(.*)", "destination": "/index.html" }
   ]

@@ -61,7 +61,7 @@ const PaymentPage = () => {
 
   // 3. FIX: Define API locally to guarantee it works and attaches the token
   const API = axios.create({
-    baseURL: "https://shiv-ganga-3.onrender.com/api",
+    baseURL: "/api",
   });
 
   // const API = axios.create({

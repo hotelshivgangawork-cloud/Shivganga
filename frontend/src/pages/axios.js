@@ -1,7 +1,7 @@
 // import axios from "axios";
 
 // const api = axios.create({
-//   baseURL: "/api", // Vite proxy → https://shiv-ganga-3.onrender.com
+//   baseURL: "/api", // Vite proxy → 
 //   withCredentials: false,
 //   headers: {
 //     "Content-Type": "application/json",

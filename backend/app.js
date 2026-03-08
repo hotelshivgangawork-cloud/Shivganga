@@ -42,7 +42,7 @@ const _dirname = path.dirname(__filename)
 // const allowedOrigins = [
 //   "http://localhost:5173",
 //   "http://localhost:5174",
-//   "https://shiv-ganga-3.onrender.com",
+//   "",
 //   "https://shiv-ganga-frontend-po3g.vercel.app",
 //   "https://hotelshivganga.in",
 //   "https://www.hotelshivganga.in",
