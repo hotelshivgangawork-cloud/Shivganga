@@ -2037,16 +2037,22 @@ export default function BookingPage() {
                     </div>
                   )}
                   {appliedCoupon && (
+                    // <button
+                    //   onClick={() =>
+                    //     navigate(location.pathname, {
+                    //       replace: true,
+                    //       state: {
+                    //         ...location.state,
+                    //         appliedCoupon: null,
+                    //       },
+                    //     })
+                    //   }
+                    //   className="text-xs text-red-500 underline text-right block"
+                    // >
+                    //   Remove coupon
+                    // </button>
                     <button
-                      onClick={() =>
-                        navigate(location.pathname, {
-                          replace: true,
-                          state: {
-                            ...location.state,
-                            appliedCoupon: null,
-                          },
-                        })
-                      }
+                      onClick={() => setAppliedCoupon(null)}
                       className="text-xs text-red-500 underline text-right block"
                     >
                       Remove coupon

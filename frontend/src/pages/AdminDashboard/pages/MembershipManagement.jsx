@@ -5,7 +5,7 @@ import {
   Users,
   MoreVertical,
   Edit2,
-  X
+  X, Download, Trash2
 } from "lucide-react";
 import api from "../../axios";
 
@@ -38,14 +38,14 @@ export default function MembershipManagement() {
     try {
       const res = await api.get("/membership/active");
       setMembership(res.data?.data || null);
-    } catch {}
+    } catch { }
   };
 
   const fetchMembers = async () => {
     try {
       const res = await api.get("/membership/members");
       setMembers(res.data?.data || []);
-    } catch {}
+    } catch { }
   };
 
   const handleCreate = async () => {
@@ -97,6 +97,71 @@ export default function MembershipManagement() {
     }
   };
 
+  // 4 march 
+  const handleDelete = async () => {
+    if (
+      !window.confirm(
+        "Are you sure you want to delete this membership? This cannot be undone.",
+      )
+    )
+      return;
+
+    try {
+      setLoading(true);
+      await api.delete("/membership"); // Assuming your endpoint is DELETE /api/membership
+      alert("Membership deleted successfully");
+      setMembership(null);
+      setShowEdit(false);
+      fetchMembership();
+    } catch (error) {
+      alert("Delete failed. Make sure the endpoint is correct.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const exportToCSV = () => {
+    if (members.length === 0) return alert("No members to export");
+
+    // Define headers
+    const headers = [
+      "First Name",
+      "Last Name",
+      "Email",
+      "Phone",
+      "Joined Date",
+    ];
+
+    // Map member data to rows
+    const rows = members.map((m) => [
+      m.firstName,
+      m.lastName,
+      m.email,
+      m.phoneNumber || "N/A",
+      new Date(m.createdAt).toLocaleDateString("en-IN"),
+    ]);
+
+    // Combine headers and rows into CSV string
+    const csvContent = [
+      headers.join(","),
+      ...rows.map((row) => row.join(",")),
+    ].join("\n");
+
+    // Create a download link and click it
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute(
+      "download",
+      `Members_List_${new Date().toISOString().split("T")[0]}.csv`,
+    );
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 space-y-10">
 
@@ -132,7 +197,8 @@ export default function MembershipManagement() {
             <label className="text-xs font-bold text-slate-500 uppercase">
               Discount Type
             </label>
-            <select
+            {/* 4 march */}
+            {/* <select
               className="w-full mt-1 border rounded-xl px-4 py-2.5"
               value={createForm.discountType}
               onChange={(e) =>
@@ -141,7 +207,12 @@ export default function MembershipManagement() {
             >
               <option value="PERCENT">Percentage (%)</option>
               <option value="FLAT">Flat (₹)</option>
-            </select>
+            </select> */}
+            <input
+              className="w-full mt-1 border rounded-xl px-4 py-2.5 bg-gray-100"
+              value="Percentage (%)"
+              disabled
+            />
           </div>
 
           <div>
@@ -161,6 +232,7 @@ export default function MembershipManagement() {
             />
           </div>
 
+          {/* 4 march
           <label className="flex items-center gap-2 text-sm font-medium">
             <input
               type="checkbox"
@@ -171,6 +243,7 @@ export default function MembershipManagement() {
             />
             Active Membership
           </label>
+          */}
         </div>
 
         <button
@@ -224,7 +297,8 @@ export default function MembershipManagement() {
                 setEditForm({ ...editForm, name: e.target.value })
               }
             />
-            <select
+            {/* 4 March */}
+            {/* <select
               className="border rounded-xl px-4 py-2.5"
               value={editForm.discountType}
               onChange={(e) =>
@@ -236,7 +310,13 @@ export default function MembershipManagement() {
             >
               <option value="PERCENT">Percentage</option>
               <option value="FLAT">Flat</option>
-            </select>
+            </select> */}
+
+            <input
+              className="border rounded-xl px-4 py-2.5 bg-gray-100"
+              value="Percentage (%)"
+              disabled
+            />
             <input
               type="number"
               className="border rounded-xl px-4 py-2.5"
@@ -250,21 +330,55 @@ export default function MembershipManagement() {
             />
           </div>
 
+          {/*\
+          4 march
+
           <button
             onClick={handleUpdate}
             className="bg-primary text-white px-6 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2"
           >
             <Save size={14} /> Update Membership
           </button>
+          */} 
+          <div className="flex flex-wrap gap-3">
+            <button
+              onClick={handleUpdate}
+              disabled={loading}
+              className="bg-primary text-white px-6 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 hover:opacity-90 transition-all"
+            >
+              <Save size={14} /> Update Membership
+            </button>
+
+            <button
+              onClick={handleDelete}
+              disabled={loading}
+              className="bg-rose-50 text-rose-600 border border-rose-100 px-6 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-rose-100 transition-all"
+            >
+              <Trash2 size={14} /> Delete Membership
+            </button>
+          </div>
         </div>
       )}
 
       {/* MEMBERS LIST */}
       <div className="bg-white border rounded-2xl p-6 shadow-sm">
         
-        <h2 className="text-lg font-bold flex items-center gap-2 mb-4">
+        {/* 4 march */}
+        {/* <h2 className="text-lg font-bold flex items-center gap-2 mb-4">
           <Users /> Members ({members.length})
-        </h2>
+        </h2> */}
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-lg font-bold flex items-center gap-2">
+            <Users /> Members ({members.length})
+          </h2>
+
+          <button
+            onClick={exportToCSV}
+            className="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-sm font-bold transition-colors"
+          >
+            <Download size={16} /> Export CSV
+          </button>
+        </div>
 
         {members.length === 0 ? (
           <p className="text-center text-slate-400 py-6">
@@ -273,12 +387,12 @@ export default function MembershipManagement() {
         ) : (
           <div className="space-y-3">
             {/* TABLE HEADINGS */}
-<div className="hidden md:grid grid-cols-4 gap-3 px-4 pb-2 mb-2 border-b text-[11px] font-bold uppercase tracking-widest text-slate-400">
-  <div>Name</div>
-  <div>Email</div>
-  <div>Phone</div>
-  <div>Joined On</div>
-</div>
+            <div className="hidden md:grid grid-cols-4 gap-3 px-4 pb-2 mb-2 border-b text-[11px] font-bold uppercase tracking-widest text-slate-400">
+              <div>Name</div>
+              <div>Email</div>
+              <div>Phone</div>
+              <div>Joined On</div>
+            </div>
 
             {members.map((m) => (
               <div

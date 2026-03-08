@@ -268,7 +268,11 @@ const PaymentPage = () => {
       const amountInPaise = Math.round(amountToCharge * 100);
 
       const payload = {
-        roomId: initialBookingData.roomIds[0],
+        // rooms: initialBookingData.roomIds,
+        rooms: initialBookingData.roomIds.map((id) => ({
+          room: id,
+          quantity: 1,
+        })),
         firstName: initialBookingData.firstName,
         lastName: initialBookingData.lastName,
         email: initialBookingData.email,
@@ -284,6 +288,8 @@ const PaymentPage = () => {
           price: act.price,
           quantity: act.count,
         })),
+
+        membershipDiscount: useMembership ? potentialMembershipDiscount : 0,
 
         paymentType: isPartialPayment ? "PARTIAL" : "FULL",
         couponCode: activeCoupon?.code || null,
@@ -512,12 +518,12 @@ const PaymentPage = () => {
       },
       ...(billing.extraMattressTotal > 0
         ? [
-            {
-              desc: "Extra Mattress",
-              qty: initialBookingData.extraMattresses,
-              amount: billing.extraMattressTotal,
-            },
-          ]
+          {
+            desc: "Extra Mattress",
+            qty: initialBookingData.extraMattresses,
+            amount: billing.extraMattressTotal,
+          },
+        ]
         : []),
       ...(initialBookingData.selectedActivities || []).map((act) => ({
         desc: act.title,
@@ -538,30 +544,30 @@ const PaymentPage = () => {
     discounts: [
       ...(billing.membershipDiscount > 0
         ? [
-            {
-              desc: "Membership Discount",
-              amount: -billing.membershipDiscount,
-              type: "membership",
-            },
-          ]
+          {
+            desc: "Membership Discount",
+            amount: -billing.membershipDiscount,
+            type: "membership",
+          },
+        ]
         : []),
       ...(billing.companyDiscount > 0
         ? [
-            {
-              desc: "Additional Discount",
-              amount: -billing.companyDiscount,
-              type: "company",
-            },
-          ]
+          {
+            desc: "Additional Discount",
+            amount: -billing.companyDiscount,
+            type: "company",
+          },
+        ]
         : []),
       ...(billing.couponDiscount > 0
         ? [
-            {
-              desc: `Coupon: ${activeCoupon?.code || "Discount"}`,
-              amount: -billing.couponDiscount,
-              type: "coupon",
-            },
-          ]
+          {
+            desc: `Coupon: ${activeCoupon?.code || "Discount"}`,
+            amount: -billing.couponDiscount,
+            type: "coupon",
+          },
+        ]
         : []),
     ],
     total: billing.grandTotal,
@@ -669,17 +675,17 @@ const PaymentPage = () => {
                       {formatCurrency(
                         isPartialPayment
                           ? Math.min(
-                              partialAmount || 0,
-                              Math.max(
-                                0,
-                                billing.grandTotal -
-                                  potentialMembershipDiscount,
-                              ),
-                            )
-                          : Math.max(
+                            partialAmount || 0,
+                            Math.max(
                               0,
-                              billing.grandTotal - potentialMembershipDiscount,
+                              billing.grandTotal -
+                              potentialMembershipDiscount,
                             ),
+                          )
+                          : Math.max(
+                            0,
+                            billing.grandTotal - potentialMembershipDiscount,
+                          ),
                       )}
                     </span>
                   </div>
@@ -1331,9 +1337,9 @@ const PaymentPage = () => {
                           <p className="text-base font-bold text-[#0f172a]">
                             {formatCurrency(
                               billing.grandTotal +
-                                billing.membershipDiscount +
-                                billing.companyDiscount +
-                                billing.couponDiscount,
+                              billing.membershipDiscount +
+                              billing.companyDiscount +
+                              billing.couponDiscount,
                             )}
                           </p>
                         </div>
@@ -1345,8 +1351,8 @@ const PaymentPage = () => {
                             -{" "}
                             {formatCurrency(
                               billing.membershipDiscount +
-                                billing.companyDiscount +
-                                billing.couponDiscount,
+                              billing.companyDiscount +
+                              billing.couponDiscount,
                             )}
                           </p>
                         </div>

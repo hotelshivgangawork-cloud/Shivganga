@@ -122,7 +122,7 @@ export default function Receptionists() {
       lastName: staff.lastName,
       email: staff.email,
       phoneNumber: staff.mobile,
-      password: "", // Empty for edit - user can set new password if needed
+      password: "********", // Empty for edit - user can set new password if needed
       basicSalary: staff.basicSalary ?? "",
       role: staff.role,
     });
@@ -272,7 +272,7 @@ export default function Receptionists() {
     // Include password only for receptionist role
     if (
       isReceptionist &&
-      (!editingId || (form.password && form.password.trim()))
+      (!editingId || (form.password && form.password !== "********"))
     ) {
       payload.password = form.password.trim();
     }
@@ -558,6 +558,11 @@ export default function Receptionists() {
                       type={showPassword ? "text" : "password"}
                       value={form.password}
                       onChange={handleInputChange}
+                      onFocus={() => {
+                        if (form.password === "********") {
+                          setForm((prev) => ({ ...prev, password: "" }));
+                        }
+                      }}
                       className="w-full border px-3 py-2 rounded-2xl text-sm pr-10"
                       required={!editingId}
                     />

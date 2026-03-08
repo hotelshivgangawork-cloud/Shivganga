@@ -113,7 +113,8 @@ export const updateReceptionist = async (req, res, next) => {
       phoneNumber,
       password,
       role,
-      isActive
+      isActive,
+      basicSalary
     } = req.body;
 
     if (email && email !== staff.email) {
@@ -133,8 +134,19 @@ export const updateReceptionist = async (req, res, next) => {
     if (role) staff.role = role;
     if (typeof isActive === "boolean") staff.isActive = isActive;
 
+    if (basicSalary !== undefined) {
+      staff.basicSalary = Number(basicSalary);
+    }
+
     if (password) {
       staff.password = await bcrypt.hash(password, 10);
+
+      await sendReceptionistCredentialsMail({
+        fullName: `${staff.firstName} ${staff.lastName}`,
+        email: staff.email,
+        password,
+        employeeId: staff.employeeId
+      });
     }
 
     await staff.save();
@@ -148,6 +160,7 @@ export const updateReceptionist = async (req, res, next) => {
         role: staff.role
       }
     });
+
   } catch (error) {
     next(error);
   }
@@ -184,7 +197,7 @@ export const getAllStaff = async (req, res, next) => {
   try {
     const staffList = await Receptionist.find()
       .select(
-        "firstName lastName employeeId email phoneNumber username role isActive"
+        "firstName lastName employeeId email phoneNumber username role isActive basicSalary"
       )
       .sort({ createdAt: -1 });
 
@@ -196,6 +209,7 @@ export const getAllStaff = async (req, res, next) => {
       mobile: s.phoneNumber,
       username: s.username || "-",
       role: s.role,
+      basicSalary: s.basicSalary,
       isActive: s.isActive
     }));
 

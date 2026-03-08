@@ -11,12 +11,12 @@ const transactionSchema = new mongoose.Schema(
     booking: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Booking",
-     default:null
+      default: null
     },
 
     type: {
       type: String,
-      enum: ["BOOKING_PAYMENT", "REFUND","OFFLINE_BOOKING_PAYMENT"],
+      enum: ["BOOKING_PAYMENT", "REFUND", "OFFLINE_BOOKING_PAYMENT"],
       required: true
     },
 
@@ -31,10 +31,10 @@ const transactionSchema = new mongoose.Schema(
       enum: ["PENDING", "SUCCESS", "FAILED"],
       default: "PENDING"
     },
-coupon: {
-  type: mongoose.Schema.Types.Mixed,
-  default: undefined,
-},
+    coupon: {
+      type: mongoose.Schema.Types.Mixed,
+      default: undefined,
+    },
     paymentGateway: {
       type: String,
       enum: ["RAZORPAY"],
@@ -57,15 +57,19 @@ coupon: {
       type: String
     },
     paymentType: {
-  type: String,
-  enum: ["FULL", "PARTIAL"],
-  required: true
-},
+      type: String,
+      enum: ["FULL", "PARTIAL"],
+      required: true
+    },
+    membershipDiscount: {
+      type: Number,
+      default: 0
+    },
 
-paidAmount: {
-  type: Number,
-  required: true
-}
+    paidAmount: {
+      type: Number,
+      required: true
+    }
 
   },
   { timestamps: true }

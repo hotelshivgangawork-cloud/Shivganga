@@ -50,6 +50,23 @@ export const upsertMembership = async (req, res, next) => {
   }
 };
 
+// 4 march
+/* ================= DELETE MEMBERSHIP (ADMIN) ================= */
+export const deleteMembership = async (req, res, next) => {
+  try {
+    // Only one membership is supported; safest is remove all docs.
+    await Membership.deleteMany({});
+
+    res.status(200).json({
+      success: true,
+      message: "Membership deleted successfully",
+      data: null,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 /* ================= GET ACTIVE MEMBERSHIP ================= */
 export const getActiveMembership = async (req, res, next) => {
   try {

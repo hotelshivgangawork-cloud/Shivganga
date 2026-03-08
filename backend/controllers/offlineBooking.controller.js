@@ -354,7 +354,7 @@ export const cancelOfflineBooking = async (req, res, next) => {
 export const createOfflinePaymentOrder = async (req, res, next) => {
   try {
     const {
-      roomId,
+      rooms,
       checkInDate,
       checkOutDate,
       adults,
@@ -372,13 +372,18 @@ export const createOfflinePaymentOrder = async (req, res, next) => {
       amountInPaise,
       totalAmount,
       paidAmountNow,
+      membershipDiscount = 0,
+      isMember = false
     } = req.body;
 
-    const room = await Room.findById(roomId);
-    if (!room)
-      return res
-        .status(404)
-        .json({ success: false, message: "Room not found" });
+    const roomsPayload = req.body.rooms || [];
+
+    if (!roomsPayload.length) {
+      return res.status(400).json({
+        success: false,
+        message: "No rooms provided",
+      });
+    }
 
     const checkIn = new Date(checkInDate);
     const checkOut = new Date(checkOutDate);
@@ -386,10 +391,27 @@ export const createOfflinePaymentOrder = async (req, res, next) => {
     if (nights <= 0)
       return res.status(400).json({ success: false, message: "Invalid dates" });
 
+    let roomAmount = 0;
+
+    for (const r of roomsPayload) {
+      const room = await Room.findById(r.room);
+
+      if (!room) {
+        return res.status(404).json({
+          success: false,
+          message: `Room not found ${r.room}`,
+        });
+      }
+
+      const quantity = r.quantity || 1;
+
+      roomAmount += nights * room.pricePerNight * quantity;
+    }
+
     const billingSettings = await getBillingSettings();
     const extraBedPrice = billingSettings.extraBedPricePerNight;
 
-    const roomAmount = nights * room.pricePerNight;
+    // const roomAmount = nights * room.pricePerNight;
 
     const addOnsAmount = addOns.reduce((sum, a) => {
       const price = ADD_ONS_PRICE_MAP[a.name] || 0;
@@ -503,6 +525,8 @@ export const createOfflinePaymentOrder = async (req, res, next) => {
       amount: transactionAmount,
       razorpayOrderId: order.id,
       coupon: appliedCoupon,
+      membershipDiscount,
+      isMember,
       status: "PENDING",
     });
 
@@ -511,7 +535,7 @@ export const createOfflinePaymentOrder = async (req, res, next) => {
       order,
       transactionId: transaction._id,
       bookingPayload: {
-        roomId,
+        rooms,
         checkInDate,
         checkOutDate,
         adults,
@@ -570,9 +594,9 @@ export const verifyOfflinePayment = async (req, res, next) => {
 
     for (const r of roomsPayload) {
 
-      const room = await Room.findById(r.roomId).session(session);
+      const room = await Room.findById(r.room).session(session);
       if (!room) {
-        throw new Error(`Room not found ${r.roomId}`);
+        throw new Error(`Room not found ${r.room}`);
       }
       roomDocs.push(room);
     }
@@ -591,7 +615,7 @@ export const verifyOfflinePayment = async (req, res, next) => {
     for (const r of roomsPayload) {
 
       const overlapping = await Booking.findOne({
-        "rooms.room": r.roomId,
+        "rooms.room": r.room,
         bookingStatus: "confirmed",
         isCheckedOut: { $ne: true },
         checkInDate: { $lt: bookingPayload.checkOutDate },
@@ -599,7 +623,7 @@ export const verifyOfflinePayment = async (req, res, next) => {
       }).session(session);
 
       if (overlapping) {
-        throw new Error(`Room already booked ${r.roomId}`);
+        throw new Error(`Room already booked ${r.room}`);
       }
     }
 
@@ -608,8 +632,14 @@ export const verifyOfflinePayment = async (req, res, next) => {
     transaction.razorpaySignature = razorpay_signature;
     await transaction.save({ session });
 
+    // const paidAmount = transaction.paidAmount;
+    // const pendingAmount = transaction.amount - paidAmount;
+    const membershipDiscount = priceBreakdown?.membershipDiscount || transaction?.membershipDiscount || 0;
+
     const paidAmount = transaction.paidAmount;
-    const pendingAmount = transaction.amount - paidAmount;
+    const totalAfterDiscount = transaction.amount - membershipDiscount;
+
+    const pendingAmount = totalAfterDiscount - paidAmount;
 
     const guestId = generateGuestId();
     const userDoc = await User.findById(transaction.user).session(session);
@@ -626,7 +656,7 @@ export const verifyOfflinePayment = async (req, res, next) => {
       guestId,
       bookingReference: bookingReference || null,
       rooms: roomsPayload.map(r => ({
-        room: r.roomId,
+        room: r.room,
         quantity: r.quantity || 1,
         plan: r.plan || "ep"
       })),
@@ -644,6 +674,7 @@ export const verifyOfflinePayment = async (req, res, next) => {
       totalAmount: transaction.amount,
       paidAmount,
       pendingAmount,
+      membershipDiscount,
       paymentType: transaction.paymentType,
       paymentStatus: pendingAmount > 0 ? "pending" : "paid",
       bookingStatus: "confirmed",

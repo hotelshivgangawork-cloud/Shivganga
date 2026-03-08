@@ -6,7 +6,8 @@ import {
   updateMembership,
   getMembershipForAdmin,
   getUserByEmail,
-  getMembershipMembers
+  getMembershipMembers,
+  deleteMembership,
 } from "../controllers/membership.controller.js";
 
 import { authMiddleware } from "../middlewares/auth.middleware.js";
@@ -38,6 +39,15 @@ router.patch(
   authMiddleware,
   roleMiddleware("admin"),
   toggleMembershipStatus
+);
+
+// 4 march
+// DELETE MEMBERSHIP (REMOVE / DISABLE COMPLETELY)
+router.delete(
+  "/membership",
+  authMiddleware,
+  roleMiddleware("admin"),
+  deleteMembership,
 );
 
 // 🔥 GET MEMBERSHIP FOR ADMIN (IMPORTANT)

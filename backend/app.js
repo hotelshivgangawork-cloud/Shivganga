@@ -274,7 +274,7 @@ app.use(globalLimiter);
 // Tighter rate limiting for sensitive endpoints
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 5, // 5 login attempts per 15 minutes
+  max: 25, // 5 login attempts per 15 minutes
   handler: (req, res) => {
     res.status(429).json({ success: false, message: "Too many login attempts, please try again later." });
   },
@@ -304,7 +304,7 @@ app.use(express.urlencoded({ extended: true }));
 app.get("/health", (req, res) => {
   res.status(200).send("Server is awake 🚀");
 });
-app.use("/api", authRoutes);
+app.use("/api", authLimiter, authRoutes);
 app.use("/api", roomRoutes);
 app.use("/api", receptionistRoutes);
 app.use("/api", testimonialRoutes);

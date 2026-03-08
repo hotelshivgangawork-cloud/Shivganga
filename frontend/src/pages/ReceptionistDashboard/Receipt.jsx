@@ -61,8 +61,8 @@ const Receipt = () => {
 
   // const billing = booking.priceBreakdown || {};
   const billing = booking.priceBreakdown?.grandTotal
-  ? booking.priceBreakdown
-  : booking.computedPriceBreakdown || {};
+    ? booking.priceBreakdown
+    : booking.computedPriceBreakdown || {};
 
   const nights =
     (new Date(booking.checkOutDate) - new Date(booking.checkInDate)) /
@@ -133,8 +133,12 @@ const Receipt = () => {
             </h3>
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 bg-slate-50 p-4 rounded-xl border">
               <div className="min-w-0">
-                <p className="font-bold text-[#0f172a]">
+                {/* <p className="font-bold text-[#0f172a]">
                   Room {booking.rooms?.[0]?.room?.roomNumber}
+                </p> */}
+                <p className="font-bold text-[#0f172a]">
+                  Rooms:{" "}
+                  {booking.rooms?.map((r) => r.room?.roomNumber).join(", ")}
                 </p>
                 <p className="text-sm text-slate-500 truncate">{booking.rooms?.[0]?.room?.name}</p>
                 <p className="text-xs text-slate-400">
@@ -214,8 +218,8 @@ const Receipt = () => {
               <span>Status</span>
               <span
                 className={`${booking.paymentStatus === "paid"
-                    ? "text-green-600"
-                    : "text-orange-500"
+                  ? "text-green-600"
+                  : "text-orange-500"
                   }`}
               >
                 {booking.paymentStatus.toUpperCase()}
