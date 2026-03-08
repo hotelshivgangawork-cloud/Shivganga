@@ -291,7 +291,7 @@ const contactLimiter = rateLimit({
 
 const bookingLimiter = rateLimit({
   windowMs: 5 * 60 * 1000, // 5 minutes
-  max: 10, // 10 booking attempts per 5 minutes
+  max: 10, // 10 booking attempts 5 minutes
   handler: (req, res) => {
     res.status(429).json({ success: false, message: "Too many booking attempts, please try again later." });
   },
