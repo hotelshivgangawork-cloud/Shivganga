@@ -300,6 +300,10 @@ const bookingLimiter = rateLimit({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Keep alive route
+app.get("/health", (req, res) => {
+  res.status(200).send("Server is awake 🚀");
+});
 app.use("/api", authRoutes);
 app.use("/api", roomRoutes);
 app.use("/api", receptionistRoutes);
