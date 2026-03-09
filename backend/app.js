@@ -304,7 +304,7 @@ app.use(express.urlencoded({ extended: true }));
 app.get("/health", (req, res) => {
   res.status(200).send("Server is awake 🚀");
 });
-app.use("/api", authLimiter, authRoutes);
+app.use("/api", authRoutes);
 app.use("/api", roomRoutes);
 app.use("/api", receptionistRoutes);
 app.use("/api", testimonialRoutes);
