@@ -517,7 +517,7 @@
 
 //       <div
 //         className={`
-//           md:hidden fixed top-0 left-0 w-full z-50 
+//           md:hidden fixed top-0 left-0 w-full z-50
 //           bg-gradient-to-b from-white to-slate-50
 //           shadow-2xl rounded-b-[2rem] overflow-hidden flex flex-col max-h-[85vh]
 //           transition-transform duration-500 cubic-bezier(0.32, 0.72, 0, 1)
@@ -554,7 +554,7 @@
 //       <div className="flex-1 flex flex-col h-full min-w-0 relative bg-[#F8FAFC]">
 //         <header
 //           className={`
-//                 flex items-center justify-between px-4 md:px-8 
+//                 flex items-center justify-between px-4 md:px-8
 //                 sticky top-0 z-40 shrink-0 gap-6 transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1)
 //                 ${isScrolled
 //               ? "h-18 bg-white/70 backdrop-blur-2xl border-b border-white/40 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] supports-[backdrop-filter]:bg-white/60"
@@ -1042,10 +1042,11 @@ const Sidebar = ({ children }) => {
           >
             <div
               className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 group cursor-pointer
-                        ${isActive
-                  ? "bg-gradient-to-r from-[#0f172a] to-[#1e293b] text-white shadow-md shadow-slate-900/20 scale-[1.02] ring-1 ring-white/10"
-                  : "text-slate-500 hover:bg-slate-50/80 hover:text-[#0f172a]"
-                }`}
+                        ${
+                          isActive
+                            ? "bg-gradient-to-r from-[#0f172a] to-[#1e293b] text-white shadow-md shadow-slate-900/20 scale-[1.02] ring-1 ring-white/10"
+                            : "text-slate-500 hover:bg-slate-50/80 hover:text-[#0f172a]"
+                        }`}
             >
               <span
                 className={`flex items-center justify-center w-5 h-5 transition-colors ${isActive ? "text-[#D4AF37]" : "text-slate-400 group-hover:text-[#D4AF37]"}`}
@@ -1123,15 +1124,16 @@ const Sidebar = ({ children }) => {
             </div>
             <div className="p-6">
               <div className="mb-5">
-                <span
+                {/* <span
                   className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider mb-3 shadow-sm
-                            ${selectedNotification.type === "booking"
-                      ? "bg-blue-50 text-blue-700 border border-blue-100"
-                      : selectedNotification.type === "payment"
-                        ? "bg-green-50 text-green-700 border border-green-100"
-                        : "bg-orange-50 text-orange-700 border border-orange-100"
-                    }`}
-                >
+                            ${
+                              selectedNotification.type === "booking"
+                                ? "bg-blue-50 text-blue-700 border border-blue-100"
+                                : selectedNotification.type === "payment"
+                                  ? "bg-green-50 text-green-700 border border-green-100"
+                                  : "bg-orange-50 text-orange-700 border border-orange-100"
+                            }`}
+                > */}
                   {selectedNotification.type === "booking" && (
                     <CalendarDays size={10} />
                   )}
@@ -1139,13 +1141,13 @@ const Sidebar = ({ children }) => {
                     <CreditCard size={10} />
                   )}
                   {selectedNotification.type}
-                </span>
+                {/* </span> */}
                 <h4 className="text-xl font-bold text-slate-900 mb-1 leading-tight">
                   {selectedNotification.title}
                 </h4>
-                <p className="text-xs text-slate-400 font-medium flex items-center gap-1">
+                {/* <p className="text-xs text-slate-400 font-medium flex items-center gap-1">
                   <ClockIcon size={12} /> {selectedNotification.time}
-                </p>
+                </p> */}
               </div>
 
               <div className="bg-slate-50/80 p-5 rounded-2xl border border-slate-100/80 mb-6">
@@ -1176,17 +1178,19 @@ const Sidebar = ({ children }) => {
                     //     selectedNotification.booking.paidAmount}
                     // </>
                     <>
-                     <p>
-  <b>Room:</b>{" "}
-  {selectedNotification.booking.rooms && selectedNotification.booking.rooms.length > 0
-    ? selectedNotification.booking.rooms
-        .filter(r => r.room) // Filter out rooms that aren't populated
-        .map(
-          (r) => `${r.room?.name || "Room"} (${r.room?.roomNumber || "N/A"})`
-        )
-        .join(", ")
-    : "Room not assigned"}
-</p>
+                      <p>
+                        <b>Room:</b>{" "}
+                        {selectedNotification.booking.rooms &&
+                        selectedNotification.booking.rooms.length > 0
+                          ? selectedNotification.booking.rooms
+                              .filter((r) => r.room) // Filter out rooms that aren't populated
+                              .map(
+                                (r) =>
+                                  `${r.room?.name || "Room"} (${r.room?.roomNumber || "N/A"})`,
+                              )
+                              .join(", ")
+                          : "Room not assigned"}
+                      </p>
 
                       <p>
                         <b>Guest:</b>{" "}
@@ -1195,30 +1199,35 @@ const Sidebar = ({ children }) => {
                           : selectedNotification.guest?.firstName
                             ? `${selectedNotification.guest.firstName} ${selectedNotification.guest.lastName || ""}`.trim()
                             : (selectedNotification.message || "")
-                              .match(/Guest:\s*([^\n]+)/)?.[1]
-                              ?.trim() || "Unknown"}
+                                .match(/Guest:\s*([^\n]+)/)?.[1]
+                                ?.trim() || "Unknown"}
                       </p>
 
                       <p>
-                        <b>Status:</b> {selectedNotification.booking.bookingStatus}
+                        <b>Status:</b>{" "}
+                        {selectedNotification.booking.bookingStatus}
                       </p>
 
                       <p>
-                        <b>Payment:</b> {selectedNotification.booking.paymentStatus}
+                        <b>Payment:</b>{" "}
+                        {selectedNotification.booking.paymentStatus}
                       </p>
 
                       <p>
-                        <b>Paid:</b> ₹{selectedNotification.booking.paidAmount} / ₹
-                        {selectedNotification.booking.totalAmount}
+                        <b>Paid:</b> ₹{selectedNotification.booking.paidAmount}{" "}
+                        / ₹{selectedNotification.booking.totalAmount}
                       </p>
 
-                     <p>
-  <b>Remaining:</b> ₹
-  {Math.max(0, selectedNotification.booking.totalAmount - 
-    selectedNotification.booking.paidAmount - 
-    (selectedNotification.booking.membershipDiscount || 0)
-  )}
-</p>
+                      <p>
+                        <b>Remaining:</b> ₹
+                        {Math.max(
+                          0,
+                          selectedNotification.booking.totalAmount -
+                            selectedNotification.booking.paidAmount -
+                            (selectedNotification.booking.membershipDiscount ||
+                              0),
+                        )}
+                      </p>
                       {/* <p>
                         <b>Membership Discount:</b> ₹
                         {selectedNotification.booking.membershipDiscount
@@ -1318,10 +1327,11 @@ const Sidebar = ({ children }) => {
           className={`
                 flex items-center justify-between px-4 md:px-8 
                 sticky top-0 z-40 shrink-0 gap-6 transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1)
-                ${isScrolled
-              ? "h-18 bg-white/70 backdrop-blur-2xl border-b border-white/40 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] supports-[backdrop-filter]:bg-white/60"
-              : "h-24 bg-transparent border-b border-transparent"
-            }
+                ${
+                  isScrolled
+                    ? "h-18 bg-white/70 backdrop-blur-2xl border-b border-white/40 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] supports-[backdrop-filter]:bg-white/60"
+                    : "h-24 bg-transparent border-b border-transparent"
+                }
             `}
         >
           <div className="flex items-center gap-4 flex-1 min-w-0">
@@ -1355,12 +1365,13 @@ const Sidebar = ({ children }) => {
                 onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
                 className={`
                         relative p-3 rounded-full transition-all duration-300 group
-                        ${isNotificationsOpen
-                    ? "bg-[#D4AF37] text-white shadow-lg shadow-[#D4AF37]/30 scale-110"
-                    : isScrolled
-                      ? "bg-white/80 text-slate-600 hover:text-[#D4AF37] shadow-sm hover:shadow-[0_4px_12px_-2px_rgba(212,175,55,0.2)] backdrop-blur-md"
-                      : "bg-white/60 text-slate-600 hover:bg-white hover:text-[#D4AF37] hover:shadow-md backdrop-blur-sm"
-                  }
+                        ${
+                          isNotificationsOpen
+                            ? "bg-[#D4AF37] text-white shadow-lg shadow-[#D4AF37]/30 scale-110"
+                            : isScrolled
+                              ? "bg-white/80 text-slate-600 hover:text-[#D4AF37] shadow-sm hover:shadow-[0_4px_12px_-2px_rgba(212,175,55,0.2)] backdrop-blur-md"
+                              : "bg-white/60 text-slate-600 hover:bg-white hover:text-[#D4AF37] hover:shadow-md backdrop-blur-sm"
+                        }
                     `}
               >
                 <Bell
@@ -1413,11 +1424,13 @@ const Sidebar = ({ children }) => {
                             </span>
                           </div>
 
-                        <p className="text-xs text-slate-500 mt-1 line-clamp-2">
-  {notif.booking && notif.booking.rooms && notif.booking.rooms.length > 0
-    ? `${notif.booking.rooms.map(r => r.room?.name || "Room").join(", ")} - ${notif.booking.bookingStatus || "confirmed"} - ${notif.booking.paymentStatus || "paid"}`
-    : notif.message}
-</p>
+                          <p className="text-xs text-slate-500 mt-1 line-clamp-2">
+                            {notif.booking &&
+                            notif.booking.rooms &&
+                            notif.booking.rooms.length > 0
+                              ? `${notif.booking.rooms.map((r) => r.room?.name || "Room").join(", ")} - ${notif.booking.bookingStatus || "confirmed"} - ${notif.booking.paymentStatus || "paid"}`
+                              : notif.message}
+                          </p>
                         </div>
                       </div>
                     ))}
@@ -1442,10 +1455,11 @@ const Sidebar = ({ children }) => {
               <div
                 className={`
                     flex items-center gap-3 cursor-pointer p-1.5 pr-4 rounded-full transition-all duration-300 group
-                    ${isScrolled
-                    ? "bg-white/80 border border-slate-100 shadow-sm hover:border-[#D4AF37]/50 hover:shadow-[0_4px_12px_-2px_rgba(212,175,55,0.15)] backdrop-blur-md"
-                    : "bg-white/40 border border-white/40 hover:bg-white/80 hover:shadow-sm backdrop-blur-sm"
-                  }
+                    ${
+                      isScrolled
+                        ? "bg-white/80 border border-slate-100 shadow-sm hover:border-[#D4AF37]/50 hover:shadow-[0_4px_12px_-2px_rgba(212,175,55,0.15)] backdrop-blur-md"
+                        : "bg-white/40 border border-white/40 hover:bg-white/80 hover:shadow-sm backdrop-blur-sm"
+                    }
                 `}
               >
                 <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#D4AF37] to-[#8a701e] p-[2px] shadow-md group-hover:scale-105 transition-transform duration-300 ring-2 ring-white">
