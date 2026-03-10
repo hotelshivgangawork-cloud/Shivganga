@@ -413,25 +413,42 @@ export default function Overview() {
           list
             .filter((b) => b.bookingStatus === "confirmed")
             .forEach((b) => {
-              const name =
-                `${b.room?.name || ""} (${b.room?.roomNumber || ""})`.trim();
-              if (!name) return;
-              if (!stats[name]) {
-                stats[name] = { count: 0, revenue: 0, nightsInMonth: 0 };
-              }
-              stats[name].count += 1;
-              if (b.paymentStatus === "paid") {
-                stats[name].revenue += Number(b.totalAmount || 0);
-              }
-              if (b.checkInDate && b.checkOutDate) {
-                const ci = new Date(b.checkInDate);
-                const co = new Date(b.checkOutDate);
-                const start = ci < startOfMonth ? startOfMonth : ci;
-                const end = co > endOfMonth ? endOfMonth : co;
-                const diffMs = Math.max(0, end.getTime() - start.getTime());
-                const nights = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-                stats[name].nightsInMonth += Math.max(0, nights);
-              }
+
+              if (!b.rooms || !Array.isArray(b.rooms)) return;
+
+              b.rooms.forEach((r) => {
+
+                const room = r.room;
+                if (!room) return;
+
+                const name =
+                  `${room.name || "Room"} (${room.roomNumber || ""})`.trim();
+
+                if (!stats[name]) {
+                  stats[name] = { count: 0, revenue: 0, nightsInMonth: 0 };
+                }
+
+                stats[name].count += r.quantity || 1;
+
+                if (b.paymentStatus === "paid") {
+                  stats[name].revenue += Number(b.totalAmount || 0);
+                }
+
+                if (b.checkInDate && b.checkOutDate) {
+                  const ci = new Date(b.checkInDate);
+                  const co = new Date(b.checkOutDate);
+
+                  const start = ci < startOfMonth ? startOfMonth : ci;
+                  const end = co > endOfMonth ? endOfMonth : co;
+
+                  const diffMs = Math.max(0, end.getTime() - start.getTime());
+                  const nights = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+                  stats[name].nightsInMonth += Math.max(0, nights);
+                }
+
+              });
+
             });
           const daysInMonth = new Date(
             today.getFullYear(),
