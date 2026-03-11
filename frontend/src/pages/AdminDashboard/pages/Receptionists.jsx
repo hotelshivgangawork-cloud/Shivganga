@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { UserPlus, Pencil, Trash2, Users, Eye, EyeOff } from "lucide-react";
+import { UserPlus, Pencil, Trash2, Users, Eye, EyeOff, ChevronDown } from "lucide-react";
 import API from "../../axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -530,18 +530,26 @@ export default function Receptionists() {
               {/* Role Dropdown */}
               <div>
                 <label className="text-xs text-gray-500">Role *</label>
-                <select
-                  name="role"
-                  value={form.role}
-                  onChange={handleInputChange}
-                  className="w-full border px-3 py-2 rounded-2xl text-sm focus:ring-1 focus:ring-primary bg-white"
-                >
-                  {ROLE_OPTIONS.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
+
+                <div className="relative">
+                  <select
+                    name="role"
+                    value={form.role}
+                    onChange={handleInputChange}
+                    className="w-full border px-3 py-2 pr-8 rounded-2xl text-sm focus:ring-1 focus:ring-primary bg-white appearance-none"
+                  >
+                    {ROLE_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+
+                  <ChevronDown
+                    size={16}
+                    className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                  />
+                </div>
               </div>
 
               {/* Password Field */}

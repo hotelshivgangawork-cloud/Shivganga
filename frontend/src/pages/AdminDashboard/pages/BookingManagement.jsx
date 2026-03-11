@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { motion as Motion } from "framer-motion";
-import { CalendarCheck2, Search, Loader2, Ban } from "lucide-react";
+import { CalendarCheck2, Search, Loader2, Ban, ChevronDown } from "lucide-react";
 import api from "../../axios"; // Path updated to fix resolution error
 
 export default function BookingCalendar() {
@@ -120,15 +120,22 @@ export default function BookingCalendar() {
             />
           </div>
 
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="text-sm border border-gray-300 rounded-2xl px-3 py-2"
-          >
-            <option>All</option>
-            <option value="paid">Paid</option>
-            <option value="pending">Pending</option>
-          </select>
+          <div className="relative">
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="text-sm border border-gray-300 rounded-2xl px-3 py-2 pr-8 appearance-none bg-white"
+            >
+              <option>All</option>
+              <option value="paid">Paid</option>
+              <option value="pending">Pending</option>
+            </select>
+
+            <ChevronDown
+              size={16}
+              className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+            />
+          </div>
         </div>
 
         {/* TABLE DATA LINKED TO CONTROLLERS */}
@@ -188,7 +195,7 @@ export default function BookingCalendar() {
 
                     {/* Date */}
                     <td className="px-4 py-3 text-sm">
-                      {new Date(b.checkInDate).toLocaleDateString()}
+                      {new Date(b.checkInDate).toLocaleDateString("en-IN")}
                     </td>
 
                     {/* Payment */}
@@ -266,7 +273,7 @@ export default function BookingCalendar() {
                     <div>
                       <div className="text-[10px] uppercase tracking-widest text-gray-400">Date</div>
                       <div className="text-sm text-gray-700">
-                        {new Date(b.checkInDate).toLocaleDateString()}
+                        {new Date(b.checkInDate).toLocaleDateString("en-IN")}
                       </div>
                     </div>
                     <div>

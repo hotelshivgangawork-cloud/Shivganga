@@ -946,7 +946,6 @@ useEffect(() => {
     { to: "/admin/gallery", label: "Gallery Management", icon: Images },
     { to: "/admin/bookings", label: "Bookings", icon: CalendarCheck2 },
     { to: "/admin/guest-management", label: "Guest Directory", icon: Users },
-    { to: "/admin/receptionists", label: "Receptionists", icon: Users },
 
     /* 🔥 NEW MEMBERSHIP TAB */
     {
@@ -959,6 +958,7 @@ useEffect(() => {
       label: "Coupons",
       icon: BadgePercent,
     },
+    { to: "/admin/receptionists", label: "Staff", icon: Users },
     {
       to: "/admin/salary-reports",
       label: "Staff Salary Management",
