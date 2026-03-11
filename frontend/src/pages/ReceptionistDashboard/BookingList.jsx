@@ -42,6 +42,9 @@ const Bookings = () => {
   const [editingId, setEditingId] = useState(null);
   const [editFormData, setEditFormData] = useState({});
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const PAGE_SIZE = 10;
+
   const dateInputRef = useRef(null);
 
   /* ================= FETCH STATS ================= */
@@ -234,6 +237,13 @@ const Bookings = () => {
       (b.displayId || b.bookingReference || "").toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const startIndex = (currentPage - 1) * PAGE_SIZE;
+  const paginatedBookings = filteredBookings.slice(
+    startIndex,
+    startIndex + PAGE_SIZE
+  );
+  const totalPages = Math.ceil(filteredBookings.length / PAGE_SIZE);
+
   const getStatusColor = (status) => {
     switch (status) {
       case "Check-in":
@@ -392,7 +402,7 @@ const handleCalendarClick = () => {
                 </thead>
                 <tbody className="divide-y divide-slate-50">
                   {filteredBookings.length > 0 ? (
-                    filteredBookings.map((row) => {
+                    paginatedBookings.map((row) => {
                       const isEditing = editingId === row.id;
                       return (
                         <tr key={row.id} className="hover:bg-[#FFF8E1]/40 transition-colors group cursor-pointer relative">
@@ -542,19 +552,39 @@ const handleCalendarClick = () => {
               </table>
             </div>
 
-            <div className="flex items-center justify-between px-6 py-4 bg-slate-50 border-t border-slate-100">
+            {filteredBookings.length > PAGE_SIZE && (
+              <div className="flex items-center justify-between px-6 py-4 bg-slate-50 border-t border-slate-100">
               <p className="text-xs font-bold text-slate-400 uppercase tracking-wide">Showing {filteredBookings.length} entries</p>
               <div className="flex gap-2">
-                <button className="size-8 flex items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 hover:border-[#D4AF37] hover:text-[#D4AF37] transition-all">
+                <button
+                  disabled={currentPage === 1}
+                  onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+                  className="size-8 flex items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500"
+                >
                   <ChevronLeft size={16} />
                 </button>
-                <button className="size-8 flex items-center justify-center rounded-lg bg-[#0f172a] text-white text-xs font-bold shadow-md">1</button>
-                <button className="size-8 flex items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 hover:border-[#D4AF37] hover:text-[#D4AF37] transition-all">2</button>
-                <button className="size-8 flex items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 hover:border-[#D4AF37] hover:text-[#D4AF37] transition-all">
+                {Array.from({ length: totalPages }, (_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setCurrentPage(i + 1)}
+                    className={`size-8 flex items-center justify-center rounded-lg text-xs font-bold
+                      ${currentPage === i + 1
+                        ? "bg-[#0f172a] text-white"
+                        : "border border-slate-200 bg-white text-slate-500"}
+                    `}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+                <button
+                  disabled={startIndex + PAGE_SIZE >= filteredBookings.length}
+                  onClick={() => setCurrentPage((p) => p + 1)}
+                  className="size-8 flex items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500"
+                >
                   <ChevronRight size={16} />
                 </button>
               </div>
-            </div>
+            </div>)}
           </div>
 
         </div>

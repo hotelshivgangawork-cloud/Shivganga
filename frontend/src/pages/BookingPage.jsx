@@ -468,7 +468,8 @@ export default function BookingPage() {
     (currentStep === 1 && true) ||
     (currentStep === 2 && formData.selectedRooms.length > 0) ||
     (currentStep === 3 && true) ||
-    (currentStep === 4 && otpVerified);
+    // (currentStep === 4 && otpVerified);
+    (currentStep === 4 && otpVerified && formData.firstName && formData.lastName && formData.phone);
   const nextLabel =
     currentStep === 1
       ? "Check Availability"
@@ -678,6 +679,41 @@ export default function BookingPage() {
   const isValidEmail = (email) => {
     const x = (email || "").trim();
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(x);
+  };
+
+  // form validation
+  const validatePersonalDetails = () => {
+    if (!formData.firstName.trim()) {
+      alert("Please enter your first name");
+      return false;
+    }
+
+    if (!formData.lastName.trim()) {
+      alert("Please enter your last name");
+      return false;
+    }
+
+    if (!isValidEmail(formData.email)) {
+      alert("Please enter a valid email address");
+      return false;
+    }
+
+    if (!formData.phone.trim()) {
+      alert("Please enter your phone number");
+      return false;
+    }
+
+    if (!/^[0-9]{10}$/.test(formData.phone.replace(/\D/g, ""))) {
+      alert("Please enter a valid 10 digit phone number");
+      return false;
+    }
+
+    if (!otpVerified) {
+      alert("Please verify your email OTP before continuing");
+      return false;
+    }
+
+    return true;
   };
 
   const sendOtp = async () => {
@@ -1527,7 +1563,7 @@ export default function BookingPage() {
                       disabled={!canApplyCoupon}
                       className={`px-5 py-2 border rounded-xl font-bold text-sm transition
              ${canApplyCoupon
-                          ? "border-primary text-white bg-primary hover:text-primary hover:bg-accent"
+                          ? "border-primary text-white bg-primary hover:text-primary hover:bg-accent hover:border-transparent cursor-pointer"
                           : "border-gray-300 text-gray-400 cursor-not-allowed opacity-60"
                         }`}
                     >
@@ -2053,7 +2089,7 @@ export default function BookingPage() {
                     // </button>
                     <button
                       onClick={() => setAppliedCoupon(null)}
-                      className="text-xs text-red-500 underline text-right block"
+                      className="text-xs text-red-500 underline text-right block cursor-pointer hover:text-red-600 transition-colors duration-200"
                     >
                       Remove coupon
                     </button>
@@ -2109,6 +2145,7 @@ export default function BookingPage() {
                           if (currentStep < 4) {
                             proceedNext();
                           } else if (currentStep === 4) {
+                            if (!validatePersonalDetails()) return; // form validation
                             setPaymentError(""); // ✅ Clear error before showing popup
                             if (isMember) {
                               setShowPaymentChoice(true); // 🔥 already member
@@ -2117,10 +2154,18 @@ export default function BookingPage() {
                             }
                           }
                         }}
+                        // disabled={
+                        //   (currentStep === 2 &&
+                        //     formData.selectedRooms.length === 0) ||
+                        //   (currentStep === 4 && !otpVerified)
+                        // }
                         disabled={
-                          (currentStep === 2 &&
-                            formData.selectedRooms.length === 0) ||
-                          (currentStep === 4 && !otpVerified)
+                          (currentStep === 2 && formData.selectedRooms.length === 0) ||
+                          (currentStep === 4 &&
+                            (!otpVerified ||
+                            !formData.firstName.trim() ||
+                            !formData.lastName.trim() ||
+                            !formData.phone.trim()))
                         }
                         className="flex-1 btn-primary px-2 py-3 text-xs disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 rounded-2xl cursor-pointer"
                       >

@@ -87,7 +87,7 @@ const AvailableCoupons = () => {
     className="px-4 py-2 rounded-xl border 
                font-semibold text-sm uppercase tracking-wider
                transition-all duration-300 
-               border-primary text-white bg-primary hover:text-primary hover:bg-accent"
+               text-white bg-primary hover:text-primary hover:bg-accent hover:border-transparent"
   >
     Back to Booking
   </button>
@@ -136,7 +136,7 @@ const AvailableCoupons = () => {
 
           <button
             onClick={() => applyCoupon(c.code)}
-            className="bg-[#0f172a] text-white px-4 py-2 rounded-lg"
+            className="bg-[#0f172a] text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-accent hover:text-primary transition-all duration-200"
           >
             Apply
           </button>

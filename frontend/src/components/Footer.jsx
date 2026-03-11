@@ -149,16 +149,20 @@ export default function Footer() {
             {/* Phone */}
             <li className="flex gap-3 items-start">
               <Phone className="text-accent mt-1 flex-shrink-0 w-5" size={18} />
-              <span className="leading-relaxed break-words">
-                {property.phones?.join(", ")}
-              </span>
+              <div className="leading-relaxed flex flex-wrap gap-x-2">
+                {property.phones?.map((phone, idx) => (
+                  <span key={idx} className="whitespace-nowrap">
+                    {phone}{idx < property.phones.length - 1 && ","}
+                  </span>
+                ))}
+              </div>
             </li>
 
             {/* Email */}
             <li className="flex gap-3 items-start">
               <Mail className="text-accent mt-1 flex-shrink-0 w-5" size={18} />
 
-              <div className="flex flex-col gap-1 leading-relaxed break-all">
+              <div className="flex flex-col gap-1 leading-relaxed break-words">
                 {property.emails?.map((email, idx) => (
                   <a
                     key={idx}
