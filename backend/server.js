@@ -1,17 +1,8 @@
+import "./init.js"
 import express from "express"
 import app from "./app.js"
 import {config} from "./configs/env.js"
 import {connectDB} from "./configs/db.js"
-
-// Catch unhandled errors that cause "Exited with status 1"
-process.on("unhandledRejection", (reason, promise) => {
-  console.error("❌ UNHANDLED REJECTION:", reason);
-});
-
-process.on("uncaughtException", (err) => {
-  console.error("❌ UNCAUGHT EXCEPTION:", err);
-  process.exit(1);
-});
 
 const PORT = process.env.PORT || config.PORT || 5000;
 

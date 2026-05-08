@@ -322,4 +322,5 @@ app.get("*", (req, res) => {
 
 app.use(multerErrorMiddleware);
 app.use(errorMiddleware)
+console.log("✅ App module loaded");
 export default app
