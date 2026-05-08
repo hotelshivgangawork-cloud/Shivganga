@@ -1,7 +1,7 @@
 import express from "express";
 import rateLimit from "express-rate-limit";
 import { verifyCaptcha } from "../middlewares/captcha.middleware.js";
-import { validateBookingForm } from "../middlewares/validate-input.middleware.js";
+import { validateBookingForm, validateEmailOnly } from "../middlewares/validate-input.middleware.js";
 import {
   createPaymentOrder,
   verifyPayment,
@@ -38,7 +38,7 @@ router.post(
 );
 
 // Test endpoint for debugging
-router.post("/online-booking/test-email", async (req, res) => {
+router.post("/online-booking/test-email", validateEmailOnly, async (req, res) => {
   try {
     const { email } = req.body;
     const EmailOTP = (await import("../models/EmailOTP.model.js")).default;

@@ -325,8 +325,7 @@ const PaymentPage = () => {
         throw new Error("Invalid order response from server");
       }
 
-      const razorpayKey =
-        import.meta.env.VITE_RAZORPAY_KEY || "rzp_test_SE6CPbCWExgDOK";
+      const razorpayKey = import.meta.env.VITE_RAZORPAY_KEY;
 
       const options = {
         key: razorpayKey,

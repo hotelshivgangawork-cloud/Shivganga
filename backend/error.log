@@ -1,0 +1,141 @@
+2026-05-05T13:28:14.448Z - ERROR: Unauthorized
+Error: Unauthorized
+    at Request.callback (C:\Users\dell\Downloads\Shivganga-main\backend\node_modules\superagent\lib\node\index.js:688:13)
+    at C:\Users\dell\Downloads\Shivganga-main\backend\node_modules\superagent\lib\node\index.js:891:18
+    at IncomingMessage.<anonymous> (C:\Users\dell\Downloads\Shivganga-main\backend\node_modules\superagent\lib\node\parsers\json.js:17:7)
+    at IncomingMessage.emit (node:events:520:35)
+    at endReadableNT (node:internal/streams/readable:1729:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+
+2026-05-05T13:28:39.774Z - ERROR: Unauthorized
+Error: Unauthorized
+    at Request.callback (C:\Users\dell\Downloads\Shivganga-main\backend\node_modules\superagent\lib\node\index.js:688:13)
+    at C:\Users\dell\Downloads\Shivganga-main\backend\node_modules\superagent\lib\node\index.js:891:18
+    at IncomingMessage.<anonymous> (C:\Users\dell\Downloads\Shivganga-main\backend\node_modules\superagent\lib\node\parsers\json.js:17:7)
+    at IncomingMessage.emit (node:events:520:35)
+    at endReadableNT (node:internal/streams/readable:1729:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+
+2026-05-05T13:28:59.025Z - ERROR: Unauthorized
+Error: Unauthorized
+    at Request.callback (C:\Users\dell\Downloads\Shivganga-main\backend\node_modules\superagent\lib\node\index.js:688:13)
+    at C:\Users\dell\Downloads\Shivganga-main\backend\node_modules\superagent\lib\node\index.js:891:18
+    at IncomingMessage.<anonymous> (C:\Users\dell\Downloads\Shivganga-main\backend\node_modules\superagent\lib\node\parsers\json.js:17:7)
+    at IncomingMessage.emit (node:events:520:35)
+    at endReadableNT (node:internal/streams/readable:1729:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+
+2026-05-05T13:29:26.163Z - ERROR: Unauthorized
+Error: Unauthorized
+    at Request.callback (C:\Users\dell\Downloads\Shivganga-main\backend\node_modules\superagent\lib\node\index.js:688:13)
+    at C:\Users\dell\Downloads\Shivganga-main\backend\node_modules\superagent\lib\node\index.js:891:18
+    at IncomingMessage.<anonymous> (C:\Users\dell\Downloads\Shivganga-main\backend\node_modules\superagent\lib\node\parsers\json.js:17:7)
+    at IncomingMessage.emit (node:events:520:35)
+    at endReadableNT (node:internal/streams/readable:1729:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+
+2026-05-05T14:13:02.450Z - ERROR: Unauthorized
+Error: Unauthorized
+    at Request.callback (C:\Users\dell\Downloads\Shivganga-main\backend\node_modules\superagent\lib\node\index.js:688:13)
+    at C:\Users\dell\Downloads\Shivganga-main\backend\node_modules\superagent\lib\node\index.js:891:18
+    at IncomingMessage.<anonymous> (C:\Users\dell\Downloads\Shivganga-main\backend\node_modules\superagent\lib\node\parsers\json.js:17:7)
+    at IncomingMessage.emit (node:events:520:35)
+    at endReadableNT (node:internal/streams/readable:1729:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+
+2026-05-05T16:23:40.836Z - ERROR: getaddrinfo ENOTFOUND api.sendinblue.com
+Error: getaddrinfo ENOTFOUND api.sendinblue.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26)
+
+2026-05-05T16:25:17.719Z - ERROR: Unauthorized
+Error: Unauthorized
+    at Request.callback (C:\Users\dell\Downloads\Shivganga-main\backend\node_modules\superagent\lib\node\index.js:688:13)
+    at C:\Users\dell\Downloads\Shivganga-main\backend\node_modules\superagent\lib\node\index.js:891:18
+    at IncomingMessage.<anonymous> (C:\Users\dell\Downloads\Shivganga-main\backend\node_modules\superagent\lib\node\parsers\json.js:17:7)
+    at IncomingMessage.emit (node:events:520:35)
+    at endReadableNT (node:internal/streams/readable:1729:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+
+2026-05-05T16:26:19.921Z - ERROR: Unauthorized
+Error: Unauthorized
+    at Request.callback (C:\Users\dell\Downloads\Shivganga-main\backend\node_modules\superagent\lib\node\index.js:688:13)
+    at C:\Users\dell\Downloads\Shivganga-main\backend\node_modules\superagent\lib\node\index.js:891:18
+    at IncomingMessage.<anonymous> (C:\Users\dell\Downloads\Shivganga-main\backend\node_modules\superagent\lib\node\parsers\json.js:17:7)
+    at IncomingMessage.emit (node:events:520:35)
+    at endReadableNT (node:internal/streams/readable:1729:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+
+2026-05-05T16:27:15.633Z - ERROR: Unauthorized
+Error: Unauthorized
+    at Request.callback (C:\Users\dell\Downloads\Shivganga-main\backend\node_modules\superagent\lib\node\index.js:688:13)
+    at C:\Users\dell\Downloads\Shivganga-main\backend\node_modules\superagent\lib\node\index.js:891:18
+    at IncomingMessage.<anonymous> (C:\Users\dell\Downloads\Shivganga-main\backend\node_modules\superagent\lib\node\parsers\json.js:17:7)
+    at IncomingMessage.emit (node:events:520:35)
+    at endReadableNT (node:internal/streams/readable:1729:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+
+2026-05-05T18:52:27.874Z - ERROR: Unauthorized
+Error: Unauthorized
+    at Request.callback (C:\Users\dell\Downloads\Shivganga-main\backend\node_modules\superagent\lib\node\index.js:688:13)
+    at C:\Users\dell\Downloads\Shivganga-main\backend\node_modules\superagent\lib\node\index.js:891:18
+    at IncomingMessage.<anonymous> (C:\Users\dell\Downloads\Shivganga-main\backend\node_modules\superagent\lib\node\parsers\json.js:17:7)
+    at IncomingMessage.emit (node:events:520:35)
+    at endReadableNT (node:internal/streams/readable:1729:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+
+2026-05-05T19:25:29.366Z - ERROR: getaddrinfo ENOTFOUND api.sendinblue.com
+Error: getaddrinfo ENOTFOUND api.sendinblue.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26)
+
+2026-05-05T19:25:30.344Z - ERROR: getaddrinfo ENOTFOUND api.sendinblue.com
+Error: getaddrinfo ENOTFOUND api.sendinblue.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26)
+
+2026-05-05T20:04:21.219Z - ERROR: getaddrinfo ENOTFOUND api.sendinblue.com
+Error: getaddrinfo ENOTFOUND api.sendinblue.com
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26)
+
+2026-05-05T20:05:38.735Z - ERROR: Unauthorized
+Error: Unauthorized
+    at Request.callback (C:\Users\dell\Downloads\Shivganga-main\backend\node_modules\superagent\lib\node\index.js:688:13)
+    at C:\Users\dell\Downloads\Shivganga-main\backend\node_modules\superagent\lib\node\index.js:891:18
+    at IncomingMessage.<anonymous> (C:\Users\dell\Downloads\Shivganga-main\backend\node_modules\superagent\lib\node\parsers\json.js:17:7)
+    at IncomingMessage.emit (node:events:520:35)
+    at endReadableNT (node:internal/streams/readable:1729:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+
+2026-05-08T18:43:58.460Z - ERROR: Unauthorized
+Error: Unauthorized
+    at Request.callback (C:\Users\dell\Downloads\Shivganga-main\backend\node_modules\superagent\lib\node\index.js:688:13)
+    at C:\Users\dell\Downloads\Shivganga-main\backend\node_modules\superagent\lib\node\index.js:891:18
+    at IncomingMessage.<anonymous> (C:\Users\dell\Downloads\Shivganga-main\backend\node_modules\superagent\lib\node\parsers\json.js:17:7)
+    at IncomingMessage.emit (node:events:520:35)
+    at endReadableNT (node:internal/streams/readable:1729:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+
+2026-05-08T18:53:16.629Z - ERROR: Expected property name or '}' in JSON at position 1 (line 1 column 2)
+SyntaxError: Expected property name or '}' in JSON at position 1 (line 1 column 2)
+    at JSON.parse (<anonymous>)
+    at parse (C:\Users\dell\Downloads\Shivganga-main\backend\node_modules\body-parser\lib\types\json.js:72:19)
+    at C:\Users\dell\Downloads\Shivganga-main\backend\node_modules\body-parser\lib\read.js:162:18
+    at AsyncResource.runInAsyncScope (node:async_hooks:228:14)
+    at invokeCallback (C:\Users\dell\Downloads\Shivganga-main\backend\node_modules\raw-body\index.js:238:16)
+    at done (C:\Users\dell\Downloads\Shivganga-main\backend\node_modules\raw-body\index.js:227:7)
+    at IncomingMessage.onEnd (C:\Users\dell\Downloads\Shivganga-main\backend\node_modules\raw-body\index.js:287:7)
+    at IncomingMessage.emit (node:events:508:28)
+    at endReadableNT (node:internal/streams/readable:1729:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+
+2026-05-08T18:53:20.891Z - ERROR: Bad escaped character in JSON at position 5 (line 1 column 6)
+SyntaxError: Bad escaped character in JSON at position 5 (line 1 column 6)
+    at JSON.parse (<anonymous>)
+    at parse (C:\Users\dell\Downloads\Shivganga-main\backend\node_modules\body-parser\lib\types\json.js:72:19)
+    at C:\Users\dell\Downloads\Shivganga-main\backend\node_modules\body-parser\lib\read.js:162:18
+    at AsyncResource.runInAsyncScope (node:async_hooks:228:14)
+    at invokeCallback (C:\Users\dell\Downloads\Shivganga-main\backend\node_modules\raw-body\index.js:238:16)
+    at done (C:\Users\dell\Downloads\Shivganga-main\backend\node_modules\raw-body\index.js:227:7)
+    at IncomingMessage.onEnd (C:\Users\dell\Downloads\Shivganga-main\backend\node_modules\raw-body\index.js:287:7)
+    at IncomingMessage.emit (node:events:508:28)
+    at endReadableNT (node:internal/streams/readable:1729:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+

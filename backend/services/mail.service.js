@@ -3,7 +3,9 @@ import { config } from "../configs/env.js";
 import SystemSetting from "../models/SystemSetting.model.js";
 
 const client = SibApiV3Sdk.ApiClient.instance;
-client.authentications["api-key"].apiKey = config.BREVO_API_KEY;
+const apiKey = config.BREVO_API_KEY;
+console.log(`Using Brevo Key: ${apiKey?.substring(0, 8)}...${apiKey?.substring(apiKey.length - 4)} (Length: ${apiKey?.length})`);
+client.authentications["api-key"].apiKey = apiKey;
 
 const transactionalEmailApi = new SibApiV3Sdk.TransactionalEmailsApi();
 

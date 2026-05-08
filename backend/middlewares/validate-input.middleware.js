@@ -11,6 +11,7 @@ import { body, validationResult } from 'express-validator';
 export const handleValidationErrors = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
+    console.warn(">>> [VALIDATION] Failed:", errors.array());
     return res.status(400).json({
       success: false,
       message: 'Validation failed',
@@ -94,6 +95,20 @@ export const validateBookingForm = [
     .isLength({ max: 1000 }).withMessage('Special request must not exceed 1000 characters')
     .escape()
     .optional(),
+  
+  handleValidationErrors
+];
+
+/**
+ * Single email validation chain
+ * Used for OTP and other email-only requests
+ */
+export const validateEmailOnly = [
+  body('email')
+    .trim()
+    .toLowerCase()
+    .isEmail().withMessage('Invalid email address')
+    .normalizeEmail(),
   
   handleValidationErrors
 ];

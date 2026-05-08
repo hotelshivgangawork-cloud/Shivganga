@@ -735,8 +735,10 @@ export default function BookingPage() {
       }, 1000);
 
       setOtpError("");
-    } catch {
-      setOtpError("Failed to send OTP");
+    } catch (err) {
+      const msg = err.response?.data?.message || "Failed to send OTP";
+      setOtpError(msg);
+      console.error("OTP SEND ERROR:", err.response?.data || err.message);
     }
   };
 
@@ -765,7 +767,9 @@ export default function BookingPage() {
 
       await checkExistingMembership();
     } catch (err) {
-      setOtpError("Invalid or expired OTP");
+      const msg = err.response?.data?.message || "Invalid or expired OTP";
+      setOtpError(msg);
+      console.error("OTP VERIFY ERROR:", err.response?.data || err.message);
     }
   };
 

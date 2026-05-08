@@ -160,8 +160,8 @@ const Dashboard = () => {
             return {
               id: b._id,
               name,
-              room: b.room?.roomNumber || "",
-              type: b.room?.name || "",
+              room: b.rooms?.[0]?.room?.roomNumber || "",
+              type: b.rooms?.[0]?.room?.name || "",
               date: dateSrc
                 ? new Date(dateSrc).toLocaleDateString("en-IN", {
                     day: "numeric",

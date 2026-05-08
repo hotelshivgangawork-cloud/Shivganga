@@ -38,79 +38,44 @@ const app = express()
 const __filename = fileURLToPath(import.meta.url)
 const _dirname = path.dirname(__filename)
 
-// ---------- CORS (apply BEFORE any rate limiters) ----------
-// const allowedOrigins = [
-//   "http://localhost:5173",
-//   "http://localhost:5174",
-//   "",
-//   "https://shiv-ganga-frontend-po3g.vercel.app",
-//   "https://hotelshivganga.in",
-//   "https://www.hotelshivganga.in",
-//   "http://hotelshivganga.in",
-//   "http://www.hotelshivganga.in"
-// ];
+// ---------- CORS ----------
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "http://127.0.0.1:5173",
+  "http://127.0.0.1:5174",
+  "https://shiv-ganga-frontend-po3g.vercel.app",
+  "https://hotelshivganga.in",
+  "https://www.hotelshivganga.in",
+  "http://hotelshivganga.in",
+  "http://www.hotelshivganga.in"
+];
 
-// const corsOptions = {
-//   origin: function (origin, callback) {
-//     if (!origin) return callback(null, true);
-//     if (allowedOrigins.includes(origin)) {
-//       callback(null, true);
-//     } else {
-//       callback(new Error("Not allowed by CORS"));
-//     }
-//   },
-//   credentials: true,
-//   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-//   // Allow Accept header for newsletter footer subscription and other JSON APIs
-//   allowedHeaders: ["Content-Type", "Authorization", "Accept"],
-//   optionsSuccessStatus: 204,
-//   preflightContinue: false
-// };
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl)
+    if (!origin) return callback(null, true);
+    
+    if (process.env.NODE_ENV === "development") {
+      return callback(null, true);
+    }
 
-app.use(cors({origin:"*"}));
-// Enable CORS pre-flight for all routes (Express 5 + path-to-regexp safe)
-// app.options(/.*/, cors(corsOptions));
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.warn(`CORS blocked for origin: ${origin}`);
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "Accept"],
+  optionsSuccessStatus: 204,
+  preflightContinue: false
+};
 
-// Security: Helmet with enhanced HSTS
-// app.use(helmet({
-//   hsts: {
-//     maxAge: 31536000,
-//     includeSubDomains: true,
-//     preload: true
-//   },
-//   contentSecurityPolicy: {
-//     directives: {
-//       defaultSrc: ["'none'"],
-//       scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://challenges.cloudflare.com", "https://checkout.razorpay.com",
-//         "https://api.razorpay.com"],
-//       scriptSrcAttr: ["'none'"],
-//       styleSrc: ["'self'", "'unsafe-inline'"],
-//       imgSrc: ["'self'", "blob:", "data:"],
-//       connectSrc: ["'self'", "https://challenges.cloudflare.com"],
-//       frameSrc: ["'self'", "blob:", "https://challenges.cloudflare.com"],  // ← key fix
-//       childSrc: ["'self'", "blob:", "https://challenges.cloudflare.com"],  // ← key fix
-//       workerSrc: ["blob:"],
-//       formAction: ["'self'"],
-//       baseUri: ["'self'"],
-//       // NO sandbox directive here
-//     }
-//   }
-// }));
+app.use(cors(corsOptions));
 
-app.use((req,res,next)=>{
-  res.removeHeader("Content-Security-Policy");
-  next();
-});
-
-app.use(
-  helmet({
-    contentSecurityPolicy: false
-  })
-);
-
-
-
-// app.use(helmet({
 //   hsts: {
 //     maxAge: 31536000,
 //     includeSubDomains: true,
@@ -269,7 +234,9 @@ const globalLimiter = rateLimit({
     req.path?.startsWith("/api/auth"),
 });
 
-app.use(globalLimiter);
+if (process.env.NODE_ENV !== "development") {
+  app.use(globalLimiter);
+}
 
 // Tighter rate limiting for sensitive endpoints
 const authLimiter = rateLimit({
@@ -335,6 +302,23 @@ app.use("/health", (_, res) => {
     status: "OK"
   })
 })
+
+// Serve static files from the frontend dist directory
+const frontendDistPath = path.join(_dirname, "../frontend/dist");
+app.use(express.static(frontendDistPath));
+
+// Handle React routing, return all requests to React app
+app.get("*", (req, res) => {
+  if (req.path.startsWith("/api")) {
+    return res.status(404).json({ message: "API route not found" });
+  }
+  res.sendFile(path.join(frontendDistPath, "index.html"), (err) => {
+    if (err) {
+      // If index.html is missing, just send a 404 or a basic message
+      res.status(404).send("Frontend not built or index.html missing");
+    }
+  });
+});
 
 app.use(multerErrorMiddleware);
 app.use(errorMiddleware)

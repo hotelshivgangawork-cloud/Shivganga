@@ -111,7 +111,7 @@ const Bookings = () => {
         bookingReference: b.bookingReference || b.guestId || `#BK-${b._id?.slice(-4) || ""}`,
         name: `${b.user?.firstName || ""} ${b.user?.lastName || ""}`.trim() || "Guest",
         status: uiStatus,
-        room: b.room?.roomNumber || "-",
+        room: b.rooms?.[0]?.room?.roomNumber || "-",
         dates: `${checkInStr} - ${checkOutStr}`,
         checkInDate: b.checkInDate,
         checkOutDate: b.checkOutDate,

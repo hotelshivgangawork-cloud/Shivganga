@@ -89,7 +89,7 @@ const GuestDirectory = () => {
       const { order, transactionId, pendingAmount } = res.data;
 
       const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY || "rzp_test_SE6CPbCWExgDOK",
+        key: import.meta.env.VITE_RAZORPAY_KEY,
         amount: order.amount,
         currency: order.currency || "INR",
         name: "Shiv Ganga Hospitality",

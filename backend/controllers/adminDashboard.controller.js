@@ -247,15 +247,19 @@ export const getRecentActivities = async (req, res) => {
   const bookings = await Booking.find({ bookingStatus: "confirmed" })
     .sort({ updatedAt: -1 })
     .limit(10)
-    .populate("room", "name roomNumber")
+    .populate("rooms.room", "name roomNumber")
     .populate("user", "firstName lastName");
 
   let activities = [];
 
   bookings.forEach((b) => {
+    const roomInfo = b.rooms && Array.isArray(b.rooms)
+      ? b.rooms.map(r => `${r.room?.name || "Unknown"} (Room ${r.room?.roomNumber || "N/A"})`).join(", ")
+      : "No rooms";
+
     const base = {
-      room: `${b.room.name} · Room ${b.room.roomNumber}`,
-      user: `${b.user.firstName} ${b.user.lastName}`,
+      room: roomInfo,
+      user: b.user ? `${b.user.firstName} ${b.user.lastName}` : "Guest",
     };
 
     // 🆕 Booking Created

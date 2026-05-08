@@ -1,4 +1,5 @@
 import express from "express";
+import { validateEmailOnly } from "../middlewares/validate-input.middleware.js";
 import {
   sendOTPToEmail,
   verifyEmailOTP
@@ -6,7 +7,7 @@ import {
 
 const router = express.Router();
 
-router.post("/otp/send", sendOTPToEmail);
-router.post("/otp/verify", verifyEmailOTP);
+router.post("/otp/send", validateEmailOnly, sendOTPToEmail);
+router.post("/otp/verify", validateEmailOnly, verifyEmailOTP);
 
 export default router;
