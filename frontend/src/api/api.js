@@ -3,19 +3,14 @@ import axios from "axios";
 const FALLBACK_API = "http://localhost:5001/api";
 let resolvedBaseURL = import.meta.env.VITE_API_BASE_URL || FALLBACK_API;
 
-// Guard against misconfigured baseURL pointing to the frontend origin in production
+// Simplified: Only use fallback if we are on localhost and no env is set
 if (typeof window !== "undefined") {
-  try {
-    const resolved = new URL(resolvedBaseURL, window.location.origin);
-    const sameOrigin = resolved.origin === window.location.origin;
-    const isLocalhost =
-      window.location.hostname === "localhost" ||
-      window.location.hostname === "127.0.0.1";
-    if (sameOrigin && !isLocalhost) {
-      resolvedBaseURL = FALLBACK_API;
-    }
-  } catch {
-    resolvedBaseURL = FALLBACK_API;
+  const isLocalhost =
+    window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1";
+    
+  if (!import.meta.env.VITE_API_BASE_URL && !isLocalhost) {
+    console.warn("VITE_API_BASE_URL is missing in production! API calls might fail.");
   }
 }
 
