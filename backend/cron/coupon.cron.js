@@ -1,6 +1,7 @@
 import cron from "node-cron";
 import Coupon from "../models/Coupon.model.js";
 
+console.log("⏳ Scheduling Coupon Cron job...");
 cron.schedule("*/30 * * * *", async () => {
   const now = new Date();
 

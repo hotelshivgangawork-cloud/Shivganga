@@ -1,28 +1,51 @@
-import "./init.js"
-import express from "express"
-import app from "./app.js"
-import {config} from "./configs/env.js"
-import {connectDB} from "./configs/db.js"
+import "./init.js";
+import express from "express";
+import { config } from "./configs/env.js";
+import { connectDB } from "./configs/db.js";
 
 const PORT = process.env.PORT || config.PORT || 5000;
 
+// Create a minimal bootstrap app to satisfy Render's port scan instantly
+const serverApp = express();
+
+// Basic health check for the bootstrap phase
+serverApp.get("/health", (req, res) => res.status(200).json({ status: "booting" }));
+serverApp.get("/", (req, res) => res.status(200).send("Server is starting up... Please refresh in a moment."));
+
 const startServer = async () => {
   try {
-    console.log(`🚀 Starting server in ${process.env.NODE_ENV || 'development'} mode...`);
+    console.log(`🚀 Bootstrap sequence started on port ${PORT}...`);
 
-    // Start listening as soon as possible to avoid Render's port scan timeout
-    app.listen(PORT, "0.0.0.0", () => {
-      console.log(`✅ Server is listening on port: ${PORT}`);
-      console.log(`🌐 Accessible at 0.0.0.0:${PORT}`);
+    // 1. Start listening IMMEDIATELY (Before any heavy imports)
+    const server = serverApp.listen(PORT, "0.0.0.0", () => {
+      console.log(`✅ Port ${PORT} is now open and detectable by Render.`);
     });
 
-    // Then connect to the database
+    // 2. Connect to Database
+    console.log("⏳ Connecting to database...");
     await connectDB();
+    console.log("✅ Database connection established.");
+
+    // 3. Dynamically import the heavy main application
+    console.log("⏳ Loading main application (routes, middleware, services)...");
+    const { default: realApp } = await import("./app.js");
+    
+    // 4. Hot-swap the bootstrap app with the real application
+    // We remove the old request listeners and attach the real express app
+    server.removeAllListeners('request');
+    server.on('request', realApp);
+    
+    console.log("✨ MAIN APPLICATION IS NOW FULLY LIVE AND READY! ✨");
 
   } catch (error) {
-    console.error("❌ FAILED TO START SERVER:", error);
+    console.error("❌ CRITICAL DEPLOYMENT ERROR:", error);
     process.exit(1);
   }
 };
 
 startServer();
+
+// Catch unhandled errors
+process.on("unhandledRejection", (reason) => {
+  console.error("❌ UNHANDLED REJECTION AT BOOT:", reason);
+});

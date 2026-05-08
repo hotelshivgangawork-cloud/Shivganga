@@ -5,12 +5,16 @@ import helmet from "helmet"
 import compression from "compression"
 import rateLimit from "express-rate-limit"
 import path from "path"
+console.log("📍 Checkpoint 1: Base modules loaded");
+
 import { errorMiddleware } from "./middlewares/error.middleware.js";
 import authRoutes from "./routes/auth.routes.js"
 import roomRoutes from "./routes/room.routes.js"
 import onlineBookingRoutes from "./routes/onlineBooking.routes.js"
 import receptionistRoutes from "./routes/receptionist.routes.js"
 import testimonialRoutes from "./routes/testimonial.routes.js"
+console.log("📍 Checkpoint 2: Main routes loaded");
+
 import adminDashboardRoutes from "./routes/adminDashboard.routes.js"
 import contactRoutes from "./routes/contact.routes.js"
 import checkInOutRoutes from "./routes/checkInOut.routes.js"
@@ -18,6 +22,8 @@ import staffSalaryRoutes from "./routes/staffSalary.routes.js";
 import { multerErrorMiddleware } from "./middlewares/multerError.middleware.js"
 import staffReportRoutes from "./routes/staffReport.routes.js";
 import guestRoutes from "./routes/guestDirectory.routes.js"
+console.log("📍 Checkpoint 3: Admin/Staff routes loaded");
+
 import receptionistDashboardRoutes from "./routes/receptionistDashboard.routes.js"
 import offlineBookingRoutes from "./routes/offlineBooking.routes.js"
 import operationalBookingRoutes from "./routes/operationalBooking.routes.js"
@@ -28,11 +34,16 @@ import systemSettingRoutes from "./routes/systemSetting.routes.js"
 import notificationRoutes from "./routes/notification.routes.js"
 import taxesAndBillingRoutes from "./routes/taxesAndBilling.routes.js"
 import bookingPolicyRoutes from "./routes/bookingPolicy.routes.js"
+console.log("📍 Checkpoint 4: Detail routes loaded");
+
 import otpRoutes from "./routes/otp.routes.js"
+console.log("📍 Checkpoint 5: OTP routes loaded (Brevo init happens here)");
+
 import "./cron/coupon.cron.js";
 import membershipRoutes from "./routes/membership.routes.js";
 import newsletterRoutes from "./routes/newsletter.routes.js"
 import captchaRoutes from "./routes/captcha.routes.js";
+console.log("📍 Checkpoint 6: Cron and final routes loaded");
 
 const app = express()
 const __filename = fileURLToPath(import.meta.url)

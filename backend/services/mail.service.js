@@ -7,12 +7,14 @@ const apiKey = config.BREVO_API_KEY;
 console.log(`Using Brevo Key: ${apiKey?.substring(0, 8)}...${apiKey?.substring(apiKey.length - 4)} (Length: ${apiKey?.length})`);
 try {
   client.authentications["api-key"].apiKey = apiKey;
-  console.log("✅ Brevo API Key configured");
+  console.log("✅ Brevo API Key set in client");
 } catch (err) {
-  console.error("❌ Failed to configure Brevo API Key:", err.message);
+  console.error("❌ Failed to set Brevo API Key:", err.message);
 }
 
+console.log("⏳ Creating Brevo TransactionalEmailApi instance...");
 const transactionalEmailApi = new SibApiV3Sdk.TransactionalEmailsApi();
+console.log("✅ Brevo mail service initialized successfully");
 
 /* ================= RESET PASSWORD ================= */
 export const sendResetPasswordMail = async (toEmail, resetToken) => {
