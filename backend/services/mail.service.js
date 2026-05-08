@@ -5,7 +5,12 @@ import SystemSetting from "../models/SystemSetting.model.js";
 const client = SibApiV3Sdk.ApiClient.instance;
 const apiKey = config.BREVO_API_KEY;
 console.log(`Using Brevo Key: ${apiKey?.substring(0, 8)}...${apiKey?.substring(apiKey.length - 4)} (Length: ${apiKey?.length})`);
-client.authentications["api-key"].apiKey = apiKey;
+try {
+  client.authentications["api-key"].apiKey = apiKey;
+  console.log("✅ Brevo API Key configured");
+} catch (err) {
+  console.error("❌ Failed to configure Brevo API Key:", err.message);
+}
 
 const transactionalEmailApi = new SibApiV3Sdk.TransactionalEmailsApi();
 
