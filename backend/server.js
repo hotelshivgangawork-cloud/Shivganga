@@ -3,14 +3,24 @@ import app from "./app.js"
 import {config} from "./configs/env.js"
 import {connectDB} from "./configs/db.js"
 
-const PORT = config.PORT || 5000
+const PORT = process.env.PORT || config.PORT || 5000;
 
-const startServer =async () =>{
-  await connectDB()
-  
-  app.listen(PORT,()=>{
-    console.log(`server running on port http://localhost:${PORT}`)
-  })
-}
+const startServer = async () => {
+  try {
+    // Start listening as soon as possible to avoid Render's port scan timeout
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`Server is running on port: ${PORT}`);
+      console.log(`Ready to receive traffic at 0.0.0.0:${PORT}`);
+    });
 
-startServer()
+    // Then connect to the database
+    await connectDB();
+    console.log("Database connected successfully");
+
+  } catch (error) {
+    console.error("FAILED TO START SERVER:", error.message);
+    process.exit(1);
+  }
+};
+
+startServer();
