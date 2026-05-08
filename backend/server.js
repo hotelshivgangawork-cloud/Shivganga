@@ -7,18 +7,19 @@ const PORT = process.env.PORT || config.PORT || 5000;
 
 const startServer = async () => {
   try {
+    console.log(`🚀 Starting server in ${process.env.NODE_ENV || 'development'} mode...`);
+
     // Start listening as soon as possible to avoid Render's port scan timeout
     app.listen(PORT, "0.0.0.0", () => {
-      console.log(`Server is running on port: ${PORT}`);
-      console.log(`Ready to receive traffic at 0.0.0.0:${PORT}`);
+      console.log(`✅ Server is listening on port: ${PORT}`);
+      console.log(`🌐 Accessible at 0.0.0.0:${PORT}`);
     });
 
     // Then connect to the database
     await connectDB();
-    console.log("Database connected successfully");
 
   } catch (error) {
-    console.error("FAILED TO START SERVER:", error.message);
+    console.error("❌ FAILED TO START SERVER:", error);
     process.exit(1);
   }
 };
