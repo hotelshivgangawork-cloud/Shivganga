@@ -1,26 +1,53 @@
-import SibApiV3Sdk from "sib-api-v3-sdk";
+import nodemailer from "nodemailer";
 import { config } from "../configs/env.js";
 import SystemSetting from "../models/SystemSetting.model.js";
 
-const client = SibApiV3Sdk.ApiClient.instance;
-const apiKey = config.BREVO_API_KEY;
-console.log(`Using Brevo Key: ${apiKey?.substring(0, 8)}...${apiKey?.substring(apiKey.length - 4)} (Length: ${apiKey?.length})`);
-try {
-  client.authentications["api-key"].apiKey = apiKey;
-  console.log("✅ Brevo API Key set in client");
-} catch (err) {
-  console.error("❌ Failed to set Brevo API Key:", err.message);
-}
+// Initialize Nodemailer Transporter with SMTP
+const transporter = nodemailer.createTransport({
+  host: config.SMTP_HOST,
+  port: config.SMTP_PORT,
+  secure: config.SMTP_PORT === 465, // true for 465, false for other ports
+  auth: {
+    user: config.SMTP_USER,
+    pass: config.SMTP_PASS,
+  },
+});
 
-console.log("⏳ Creating Brevo TransactionalEmailApi instance...");
-const transactionalEmailApi = new SibApiV3Sdk.TransactionalEmailsApi();
-console.log("✅ Brevo mail service initialized successfully");
+// Verify connection configuration
+transporter.verify(function (error, success) {
+  if (error) {
+    console.error("❌ SMTP Connection Error:", error.message);
+  } else {
+    console.log("✅ SMTP Server is ready to take our messages");
+  }
+});
+
+/**
+ * Helper to maintain compatibility with existing Brevo SDK calls
+ * while using Nodemailer/SMTP under the hood.
+ */
+const sendMailShim = async ({ sender, to, subject, htmlContent }) => {
+  const mailOptions = {
+    from: `"${sender.name || config.BREVO_SENDER_NAME}" <${sender.email || config.BREVO_SENDER_EMAIL}>`,
+    to: Array.isArray(to) ? to.map(t => t.email).join(", ") : to,
+    subject: subject,
+    html: htmlContent,
+  };
+
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    return info;
+  } catch (error) {
+    console.error("❌ Nodemailer Send Error:", error.message);
+    throw error;
+  }
+};
 
 /* ================= RESET PASSWORD ================= */
 export const sendResetPasswordMail = async (toEmail, resetToken) => {
   const resetLink = `${config.CLIENT_URL}/login?resetToken=${resetToken}`;
 
-  await transactionalEmailApi.sendTransacEmail({
+  await sendMailShim({
     sender: {
       email: config.BREVO_SENDER_EMAIL,
       name: "Hotel Admin",
@@ -42,7 +69,7 @@ export const sendReceptionistCredentialsMail = async ({
   password,
   employeeId,
 }) => {
-  await transactionalEmailApi.sendTransacEmail({
+  await sendMailShim({
     sender: {
       name: "ShivGanga Hotel",
       email: config.BREVO_SENDER_EMAIL,
@@ -65,442 +92,7 @@ export const sendReceptionistCredentialsMail = async ({
   });
 };
 
-// /* ================= BOOKING CONFIRMATION ================= */
-// export const sendBookingConfirmationMail = async ({
-//   name,
-//   email,
-//   guestId,
-//   bookingReference,
-//   checkInDate,
-//   checkOutDate,
-//   nights,
-//   totalAmount,
-//   paidAmount,
-//   pendingAmount,
-//   coupon,
-//   activities,
-// }) => {
-//   // DEBUG: Log the complete received data
-//   console.log("\n========== SENDING BOOKING CONFIRMATION EMAIL ==========");
-//   console.log("📋 Booking Reference:", bookingReference);
-//   console.log("📧 Guest Email:", email);
-//   console.log("💰 Total Amount:", totalAmount);
-//   console.log("💳 Paid Amount:", paidAmount);
-//   console.log("⏳ Pending Amount:", pendingAmount);
-//   console.log("🎟️ Coupon:", JSON.stringify(coupon, null, 2));
-  
-//   // CRITICAL: Log the raw activities data
-//   console.log("\n🔍 RAW ACTIVITIES DATA:");
-//   console.log("Type of activities:", typeof activities);
-//   console.log("Is Array?", Array.isArray(activities));
-//   console.log("Activities value:", JSON.stringify(activities, null, 2));
-  
-//   if (activities) {
-//     console.log("Activities keys:", Object.keys(activities));
-//     if (Array.isArray(activities)) {
-//       console.log("Activities length:", activities.length);
-//       activities.forEach((item, index) => {
-//         console.log(`\nActivity ${index}:`, JSON.stringify(item, null, 2));
-//         console.log(`Activity ${index} type:`, typeof item);
-//         console.log(`Activity ${index} keys:`, item ? Object.keys(item) : 'No keys');
-//       });
-//     }
-//   }
-
-//   const system = await SystemSetting.findOne().sort({ updatedAt: -1 });
-//   if (!system) throw new Error("System settings not configured");
-
-//   const primaryEmail =
-//     Array.isArray(system.systemEmails) && system.systemEmails.length > 0
-//       ? system.systemEmails[0]
-//       : config.BREVO_SENDER_EMAIL;
-
-//   const primaryPhone =
-//     Array.isArray(system.systemPhoneNumbers) && system.systemPhoneNumbers.length > 0
-//       ? system.systemPhoneNumbers[0]
-//       : "N/A";
-
-//   // Price mapping for activities
-//   const PRICE_MAP = {
-//     "River Rafting": 2500,
-//     "Bungee Jumping": 4000,
-//     "Ganga Aarti": 0,
-//     "Yoga Session": 1500,
-//   };
-
-//   // Normalize key: lowercase + single space
-//   const normalizeActivityKey = (s) =>
-//     (s || "").toString().trim().toLowerCase().replace(/\s+/g, " ");
-  
-//   const NORMALIZED_PRICE_MAP = Object.fromEntries(
-//     Object.entries(PRICE_MAP).map(([k, v]) => [normalizeActivityKey(k), v]),
-//   );
-
-//   const safeCoupon = coupon && typeof coupon === "object" ? coupon : null;
-//   const couponCode = safeCoupon?.code || "";
-//   const couponDiscount = safeCoupon?.discountAmount || 0;
-
-//   const amountBeforeDiscount = safeCoupon
-//     ? Number(totalAmount || 0) + Number(couponDiscount || 0)
-//     : Number(totalAmount || 0);
-
-//   // Process activities with comprehensive data extraction
-//   let safeActivities = [];
-//   let activitiesTotal = 0;
-  
-//   console.log("\n🔄 Processing activities...");
-  
-//   // Check if activities exists and is an array
-//   if (activities && Array.isArray(activities) && activities.length > 0) {
-//     console.log(`✅ Found ${activities.length} activities to process`);
-    
-//     safeActivities = activities.map((a, index) => {
-//       console.log(`\n--- Processing Activity ${index + 1} ---`);
-//       console.log("Raw activity data:", a);
-      
-//       if (!a) {
-//         console.log("⚠️ Activity is null or undefined");
-//         return null;
-//       }
-      
-//       // Try multiple possible property names for each field
-      
-//       // 1. Extract name
-//       const activityName = 
-//         a?.activityName || 
-//         a?.name || 
-//         a?.title || 
-//         a?.activity || 
-//         a?.description ||
-//         a?.itemName ||
-//         a?.serviceName ||
-//         "Unknown Activity";
-//       console.log("Extracted name:", activityName);
-      
-//       // 2. Extract quantity
-//       const quantity = Number(
-//         a?.quantity || 
-//         a?.qty || 
-//         a?.count || 
-//         a?.numberOfPeople ||
-//         a?.pax ||
-//         a?.participants ||
-//         1
-//       );
-//       console.log("Extracted quantity:", quantity);
-      
-//       // 3. Extract unit price (try multiple fields)
-//       let unitPrice = 0;
-      
-//       // Try various price fields
-//       const priceCandidates = [
-//         a?.unitPrice,
-//         a?.price,
-//         a?.rate,
-//         a?.unit_price,
-//         a?.amount,
-//         a?.cost,
-//         a?.charges,
-//         a?.fee
-//       ];
-      
-//       for (const candidate of priceCandidates) {
-//         const num = Number(candidate);
-//         if (!isNaN(num) && num > 0) {
-//           unitPrice = num;
-//           break;
-//         }
-//       }
-      
-//       // If still zero, try the price map
-//       if (unitPrice === 0 && activityName) {
-//         const lookupKey = normalizeActivityKey(activityName);
-//         unitPrice = NORMALIZED_PRICE_MAP[lookupKey] || 0;
-//         console.log(`Using price map for ${activityName}: ${unitPrice}`);
-//       }
-//       console.log("Extracted unit price:", unitPrice);
-      
-//       // 4. Extract total price
-//       let totalPrice = 0;
-      
-//       const totalCandidates = [
-//         a?.totalPrice,
-//         a?.total,
-//         a?.total_amount,
-//         a?.amount,
-//         a?.totalCost,
-//         a?.grandTotal,
-//         a?.subtotal
-//       ];
-      
-//       for (const candidate of totalCandidates) {
-//         const num = Number(candidate);
-//         if (!isNaN(num) && num > 0) {
-//           totalPrice = num;
-//           break;
-//         }
-//       }
-      
-//       // If total price is still zero but we have quantity and unit price, calculate it
-//       if (totalPrice === 0 && quantity > 0 && unitPrice > 0) {
-//         totalPrice = quantity * unitPrice;
-//         console.log(`Calculated total price: ${quantity} × ${unitPrice} = ${totalPrice}`);
-//       }
-      
-//       console.log("Final total price:", totalPrice);
-
-//       const processedActivity = {
-//         name: activityName.toString().trim(),
-//         quantity: isNaN(quantity) ? 1 : quantity,
-//         unitPrice: isNaN(unitPrice) ? 0 : unitPrice,
-//         totalPrice: isNaN(totalPrice) ? 0 : totalPrice,
-//         // Keep original data for reference
-//         originalData: a
-//       };
-      
-//       console.log("✅ Processed activity:", processedActivity);
-//       return processedActivity;
-//     }).filter(activity => activity !== null); // Remove null activities
-    
-//     console.log(`\n📊 Successfully processed ${safeActivities.length} activities`);
-    
-//     // Calculate activities total
-//     activitiesTotal = safeActivities.reduce(
-//       (sum, a) => {
-//         const total = Number(a.totalPrice || 0);
-//         console.log(`Adding to sum: ${a.name} = ${total}`);
-//         return sum + total;
-//       },
-//       0,
-//     );
-    
-//     console.log("💰 Activities Total calculated:", activitiesTotal);
-//   } else {
-//     console.log("⚠️ No activities found or activities is not an array");
-//     if (activities) {
-//       console.log("Activities is of type:", typeof activities);
-//       console.log("Activities value:", activities);
-//     }
-//   }
-
-//   // Format currency function
-//   const formatINR = (n) => {
-//     const num = Number(n || 0);
-//     return num.toLocaleString("en-IN", { 
-//       minimumFractionDigits: 2, 
-//       maximumFractionDigits: 2 
-//     });
-//   }
-
-//   // Calculate all amounts
-//   const roomCharges = Number(totalAmount || 0);
-//   const finalActivitiesTotal = Number(activitiesTotal || 0);
-//   const grandTotal = roomCharges + finalActivitiesTotal;
-//   const finalPaidAmount = Number(paidAmount || 0);
-  
-//   // Calculate pending amount (grand total minus paid amount)
-//   // If pendingAmount is provided, use it, otherwise calculate
-//   const finalPendingAmount = pendingAmount !== undefined 
-//     ? Number(pendingAmount) 
-//     : Math.max(0, grandTotal - finalPaidAmount);
-
-//   console.log("\n📊 FINAL CALCULATIONS:");
-//   console.log("Room Charges:", roomCharges);
-//   console.log("Activities Total:", finalActivitiesTotal);
-//   console.log("Grand Total:", grandTotal);
-//   console.log("Paid Amount:", finalPaidAmount);
-//   console.log("Pending Amount:", finalPendingAmount);
-
-//   // Build the email HTML
-//   let activitiesHTML = '';
-  
-//   if (safeActivities.length > 0) {
-//     activitiesHTML = `
-//       <hr/>
-//       <h3>Activities Booked</h3>
-//       <table style="width:100%; border-collapse:collapse; margin-top:10px; border:1px solid #ddd;">
-//         <thead>
-//           <tr style="background-color:#4CAF50; color:white;">
-//             <th style="padding:10px; text-align:left;">Activity</th>
-//             <th style="padding:10px; text-align:center;">Quantity</th>
-//             <th style="padding:10px; text-align:right;">Unit Price (₹)</th>
-//             <th style="padding:10px; text-align:right;">Total (₹)</th>
-//           </tr>
-//         </thead>
-//         <tbody>
-//           ${safeActivities
-//             .map(
-//               (a) => `
-//               <tr style="border-bottom:1px solid #ddd;">
-//                 <td style="padding:10px; text-align:left;">${a.name}</td>
-//                 <td style="padding:10px; text-align:center;">${a.quantity}</td>
-//                 <td style="padding:10px; text-align:right;">${formatINR(a.unitPrice)}</td>
-//                 <td style="padding:10px; text-align:right;">${formatINR(a.totalPrice)}</td>
-//               </tr>`
-//             )
-//             .join("")}
-//           <tr style="background-color:#f2f2f2; font-weight:bold;">
-//             <td colspan="3" style="padding:12px; text-align:right;">Activities Subtotal:</td>
-//             <td style="padding:12px; text-align:right;">₹${formatINR(finalActivitiesTotal)}</td>
-//           </tr>
-//         </tbody>
-//       </table>
-//     `;
-//   }
-
-//   // Build payment summary HTML
-//   let paymentHTML = `
-//     <h3>Payment Summary</h3>
-//     <table style="width:100%; border-collapse:collapse; margin-top:10px;">
-//       <tr>
-//         <td style="padding:8px;"><b>Room Charges</b></td>
-//         <td style="padding:8px; text-align:right;">₹${formatINR(roomCharges)}</td>
-//       </tr>
-//   `;
-
-//   if (finalActivitiesTotal > 0) {
-//     paymentHTML += `
-//       <tr>
-//         <td style="padding:8px;"><b>Activities Charges</b></td>
-//         <td style="padding:8px; text-align:right;">₹${formatINR(finalActivitiesTotal)}</td>
-//       </tr>
-//     `;
-//   }
-
-//   if (safeCoupon && couponDiscount > 0) {
-//     paymentHTML += `
-//       <tr>
-//         <td style="padding:8px;">Coupon Discount (${couponCode})</td>
-//         <td style="padding:8px; text-align:right; color:green;">- ₹${formatINR(couponDiscount)}</td>
-//       </tr>
-//     `;
-//   }
-
-//   paymentHTML += `
-//     <tr style="background-color:#e8f4f8; font-weight:bold; font-size:16px;">
-//       <td style="padding:12px;">GRAND TOTAL</td>
-//       <td style="padding:12px; text-align:right;">₹${formatINR(grandTotal)}</td>
-//     </tr>
-//     <tr style="background-color:#d4edda; color:#155724;">
-//       <td style="padding:10px;"><b>Paid Amount</b></td>
-//       <td style="padding:10px; text-align:right;"><b>₹${formatINR(finalPaidAmount)}</b></td>
-//     </tr>
-//   `;
-
-//   if (finalPendingAmount > 0) {
-//     paymentHTML += `
-//       <tr style="background-color:#f8d7da; color:#721c24;">
-//         <td style="padding:10px;"><b>Pending Amount</b></td>
-//         <td style="padding:10px; text-align:right;"><b>₹${formatINR(finalPendingAmount)}</b></td>
-//       </tr>
-//     `;
-//   }
-
-//   paymentHTML += `</table>`;
-
-//   // Send the email
-//   try {
-//     console.log("\n📧 Sending email...");
-    
-//     await transactionalEmailApi.sendTransacEmail({
-//       sender: {
-//         email: config.BREVO_SENDER_EMAIL,
-//         name: system.systemHotelName,
-//       },
-//       to: [{ email }],
-//       subject: `Booking Confirmed - ${bookingReference} | ${system.systemHotelName}`,
-//       htmlContent: `
-//         <div style="font-family: Arial, sans-serif; background:#f6f6f6; padding:20px;">
-//           <div style="max-width:650px; margin:auto; background:#ffffff; padding:20px; border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.1);">
-
-//             <div style="text-align:center; margin-bottom:20px;">
-//   ${
-//   system.logo
-//     ? `<img 
-//         src="${system.logo}" 
-//         alt="${system.systemHotelName}" 
-//         style="
-//           max-height:90px; 
-//           margin-bottom:10px; 
-//           border-radius:12px;
-//           padding:6px;
-//           background:#ffffff;
-//         " 
-//       />`
-//     : ""
-// }
-//               <h2 style="margin:10px 0; color:#333;">${system.systemHotelName}</h2>
-//               <p style="color:#666;">Booking Confirmation & Receipt</p>
-//             </div>
-
-//             <p>Hello <b>${name || "Guest"}</b>,</p>
-
-//             <p style="line-height:1.6;">
-//               Thank you for choosing <b>${system.systemHotelName}</b>.
-//               Your booking has been successfully confirmed.
-//             </p>
-
-//             <div style="background-color:#f9f9f9; padding:15px; border-radius:5px; margin:20px 0;">
-//               <h3 style="margin-top:0; color:#333;">Booking Details</h3>
-//               <table style="width:100%; border-collapse:collapse;">
-//                 <tr><td style="padding:5px;"><b>Guest ID:</b></td><td style="padding:5px;">${guestId || "-"}</td></tr>
-//                 <tr><td style="padding:5px;"><b>Reference Number:</b></td><td style="padding:5px;">${bookingReference || "-"}</td></tr>
-//                 <tr><td style="padding:5px;"><b>Check-in:</b></td><td style="padding:5px;">${checkInDate || "-"}</td></tr>
-//                 <tr><td style="padding:5px;"><b>Check-out:</b></td><td style="padding:5px;">${checkOutDate || "-"}</td></tr>
-//                 <tr><td style="padding:5px;"><b>Nights:</b></td><td style="padding:5px;">${nights ?? "-"}</td></tr>
-//               </table>
-//             </div>
-
-//             ${activitiesHTML}
-
-//             <div style="background-color:#f9f9f9; padding:15px; border-radius:5px; margin:20px 0;">
-//               ${paymentHTML}
-//             </div>
-
-//           <div style="background-color:#e3f2fd; padding:16px; border-radius:6px; margin:20px 0; font-family:Arial, sans-serif;">
-//   <h3 style="margin:0 0 12px 0; color:#333;">Need Assistance?</h3>
-
-//   <table cellpadding="0" cellspacing="0" style="width:100%; color:#333; font-size:14px;">
-//     <tr>
-//       <td style="padding:4px 0; width:90px;"><b>Phone</b></td>
-//       <td style="padding:4px 0;">: ${primaryPhone}</td>
-//     </tr>
-//     <tr>
-//       <td style="padding:4px 0;"><b>Email</b></td>
-//       <td style="padding:4px 0;">: ${primaryEmail}</td>
-//     </tr>
-//     <tr>
-//       <td style="padding:4px 0; vertical-align:top;"><b>Address</b></td>
-//       <td style="padding:4px 0;">: ${system.systemAddress}</td>
-//     </tr>
-//   </table>
-// </div>
-            
-
-//             <p style="margin-top:30px; color:#666; font-size:14px; text-align:center;">
-//               This is an automated email. Please do not reply to this message.
-//             </p>
-
-//             <p style="margin-top:20px;">
-//               Regards,<br/>
-//               <b>${system.systemHotelName}</b>
-//             </p>
-
-//           </div>
-//         </div>
-//       `,
-//     });
-    
-//     console.log("✅ Email sent successfully!");
-    
-//   } catch (error) {
-//     console.error("❌ Error sending email:", error);
-//     throw error;
-//   }
-  
-//   console.log("========== EMAIL PROCESSING COMPLETE ==========\n");
-// };
-
+/* ================= BOOKING CONFIRMATION ================= */
 export const sendBookingConfirmationMail = async ({
   name,
   email,
@@ -514,7 +106,7 @@ export const sendBookingConfirmationMail = async ({
   pendingAmount,
   coupon,
   activities,
-  priceBreakdown, // ✅ NEW
+  priceBreakdown,
 }) => {
   const system = await SystemSetting.findOne().sort({ updatedAt: -1 });
   if (!system) throw new Error("System settings not configured");
@@ -535,7 +127,6 @@ export const sendBookingConfirmationMail = async ({
       maximumFractionDigits: 2,
     });
 
-  // ✅ Use priceBreakdown if available, fall back to old logic
   const pb = priceBreakdown || null;
 
   const roomTotal         = pb ? pb.roomTotal         : Number(totalAmount || 0);
@@ -655,7 +246,7 @@ export const sendBookingConfirmationMail = async ({
     </table>
   `;
 
-  await transactionalEmailApi.sendTransacEmail({
+  await sendMailShim({
     sender: {
       email: config.BREVO_SENDER_EMAIL,
       name: system.systemHotelName,
@@ -718,7 +309,7 @@ export const sendContactMailToAdmin = async ({
   subject,
   message,
 }) => {
-  await transactionalEmailApi.sendTransacEmail({
+  await sendMailShim({
     sender: {
       email: config.BREVO_SENDER_EMAIL,
       name: "ShivGanga Website",
@@ -738,7 +329,7 @@ export const sendContactMailToAdmin = async ({
 
 /* ================= EMAIL OTP ================= */
 export const sendEmailOTP = async ({ email, otp }) => {
-  await transactionalEmailApi.sendTransacEmail({
+  await sendMailShim({
     sender: {
       email: config.BREVO_SENDER_EMAIL,
       name: config.BREVO_SENDER_NAME,
@@ -758,12 +349,8 @@ export const sendEmailOTP = async ({ email, otp }) => {
 export const sendSubscriptionConfirmationMail = async (toEmail) => {
   const system = await SystemSetting.findOne().sort({ updatedAt: -1 });
   const hotelName = system?.systemHotelName || "Shiv Ganga Hotel";
-  const contactEmail =
-    Array.isArray(system?.systemEmails) && system.systemEmails.length > 0
-      ? system.systemEmails[0]
-      : config.BREVO_SENDER_EMAIL;
 
-  await transactionalEmailApi.sendTransacEmail({
+  await sendMailShim({
     sender: {
       name: hotelName,
       email: config.BREVO_SENDER_EMAIL,
@@ -778,22 +365,12 @@ export const sendSubscriptionConfirmationMail = async (toEmail) => {
             <h2 style="margin:8px 0 4px;color:#0f172a;">${hotelName}</h2>
             <p style="margin:0;color:#64748b;font-size:14px;">Subscription Confirmed</p>
           </div>
-
           <div style="padding:24px;">
-            <p style="color:#0f172a;font-size:15px;line-height:1.6;margin:0 0 12px 0;">
-              Hello,
-            </p>
+            <p style="color:#0f172a;font-size:15px;line-height:1.6;margin:0 0 12px 0;">Hello,</p>
             <p style="color:#334155;font-size:14px;line-height:1.7;margin:0 0 12px 0;">
-              Thank you for subscribing to ${hotelName}. You’ll start receiving exclusive promotions,
-              seasonal offers, and news about upcoming experiences straight to your inbox.
+              Thank you for subscribing to ${hotelName}. You’ll start receiving exclusive promotions and news.
             </p>
-            <p style="color:#334155;font-size:14px;line-height:1.7;margin:0 0 12px 0;">
-              We value your privacy and send only curated updates. You can unsubscribe at any time by replying to this email.
-            </p>
-
-            
           </div>
-
           <div style="padding:16px 24px;background:#f8fafc;border-top:1px solid #eef2f7;color:#64748b;font-size:12px;text-align:center;">
             <div>${hotelName}</div>
             ${system?.systemAddress ? `<div style="margin-top:4px;">${system.systemAddress}</div>` : ""}
@@ -812,7 +389,7 @@ export const sendAdminNewSubscriberMail = async ({ email }) => {
       ? system.systemEmails[0]
       : config.BREVO_SENDER_EMAIL;
 
-  await transactionalEmailApi.sendTransacEmail({
+  await sendMailShim({
     sender: {
       name: hotelName,
       email: config.BREVO_SENDER_EMAIL,
@@ -824,17 +401,9 @@ export const sendAdminNewSubscriberMail = async ({ email }) => {
         <div style="max-width:640px;margin:0 auto;background:#ffffff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.06);overflow:hidden;">
           <div style="padding:20px 24px;border-bottom:1px solid #eef2f7;">
             <h3 style="margin:0;color:#0f172a;">New Newsletter Subscriber</h3>
-            <p style="margin:6px 0 0;color:#64748b;font-size:14px;">${hotelName}</p>
           </div>
-
           <div style="padding:20px 24px;">
-            <p style="color:#0f172a;font-size:14px;margin:0 0 8px 0;">
-              A user has subscribed to promotional emails:
-            </p>
-            <p style="font-size:16px;color:#0ea5e9;margin:0 0 12px 0;"><strong>${email}</strong></p>
-            <p style="color:#334155;font-size:13px;line-height:1.6;margin:0;">
-              You can view subscribers in your database or export them for campaigns.
-            </p>
+            <p style="color:#0f172a;font-size:14px;margin:0 0 8px 0;">A user has subscribed: <b>${email}</b></p>
           </div>
         </div>
       </div>

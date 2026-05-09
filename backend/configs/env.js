@@ -16,6 +16,10 @@ export const config = {
   BREVO_API_KEY: process.env.BREVO_API_KEY,
   BREVO_SENDER_EMAIL: process.env.BREVO_SENDER_EMAIL,
   BREVO_SENDER_NAME: process.env.BREVO_SENDER_NAME,
+  SMTP_HOST: process.env.SMTP_HOST || "smtp-relay.brevo.com",
+  SMTP_PORT: process.env.SMTP_PORT || 587,
+  SMTP_USER: process.env.SMTP_USER,
+  SMTP_PASS: process.env.SMTP_PASS,
 
   CLIENT_URL: process.env.CLIENT_URL,
 
