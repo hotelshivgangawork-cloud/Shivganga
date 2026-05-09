@@ -29,8 +29,14 @@ export const sendOTPToEmail = async (req, res, next) => {
       console.log(">>> [OTP] Email dispatched successfully");
     } catch (mailError) {
       console.error(">>> [OTP] FAILED TO DISPATCH EMAIL:", mailError.message);
+      
+      // In production, we still want to inform the user/admin about the mail failure
+      // instead of just throwing a generic 500 error.
       if (process.env.NODE_ENV !== "development") {
-        throw mailError;
+        return res.status(400).json({ 
+          success: false, 
+          message: `Email service failure: ${mailError.message}. Please check Brevo API Key and Sender Email configuration.` 
+        });
       }
       console.log(">>> [OTP] Continuing despite email failure (Dev Mode)");
     }
