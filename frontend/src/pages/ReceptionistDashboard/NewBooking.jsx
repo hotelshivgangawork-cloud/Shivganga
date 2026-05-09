@@ -693,7 +693,7 @@ const NewBooking = () => {
                               key={i}
                               className="text-[10px] font-medium text-slate-500 bg-slate-50 px-2 py-1 rounded border"
                             >
-                              {feat}
+                              {typeof feat === "string" ? feat : feat.label}
                             </span>
                           ))}
                         </div>

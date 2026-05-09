@@ -313,7 +313,7 @@ const frontendDistPath = path.join(_dirname, "../frontend/dist");
 app.use(express.static(frontendDistPath));
 
 // Handle React routing, return all requests to React app
-app.get("(.*)", (req, res) => {
+app.get(/.*/, (req, res) => {
   if (req.path.startsWith("/api")) {
     return res.status(404).json({ message: "API route not found" });
   }

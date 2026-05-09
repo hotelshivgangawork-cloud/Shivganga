@@ -1088,9 +1088,12 @@ function RoomsList({ onSelectRoom }) {
                     <span className="flex items-center gap-2 text-xs text-gray-700 bg-gradient-to-br from-green-50 to-emerald-50 px-3 py-2 rounded-lg font-medium border border-green-100">
                       {(() => {
                         const Icon = room.features[2].icon;
+                        if (!Icon) return null;
                         return <Icon size={14} className="text-green-600" />;
                       })()}
-                      {room.features[2].label}
+                      {typeof room.features[2] === "string"
+                        ? room.features[2]
+                        : room.features[2].label}
                     </span>
                   )}
                 </div>

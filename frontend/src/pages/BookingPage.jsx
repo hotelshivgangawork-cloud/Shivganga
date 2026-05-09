@@ -113,7 +113,15 @@ export default function BookingPage() {
     if (Object.keys(draftForm).length) return draftForm;
 
     const selectedRooms = state.room
-      ? [{ ...state.room, quantity: 1, plan: "ep" }]
+      ? [
+          {
+            ...state.room,
+            quantity: 1,
+            plan: "ep",
+            mainImage: state.room.mainImage || state.room.image,
+            _id: state.room._id || state.room.id,
+          },
+        ]
       : [];
     const selectedActivities = [];
 
@@ -1289,13 +1297,13 @@ export default function BookingPage() {
 
                                 {/* Amenities - changed */} 
                                 <div className="flex flex-wrap gap-2 mb-4">
-                                  {(showAllAmenities ? room.features : room.features?.slice(0, 4)).map(
+                                  {(showAllAmenities ? room.features : room.features?.slice(0, 4))?.map(
                                     (amenity, idx) => (
                                       <span
                                         key={idx}
                                         className="text-gray-500 text-[10px] uppercase tracking-wider px-3 py-1 border border-gray-200 rounded-full"
                                       >
-                                        {amenity}
+                                        {typeof amenity === "string" ? amenity : amenity.label}
                                       </span>
                                     )
                                   )}
@@ -1962,7 +1970,7 @@ export default function BookingPage() {
                           <div key={idx} className="flex items-start gap-4">
                             <div className="relative">
                               <img
-                                src={room.mainImage}
+                                src={room.mainImage || room.image}
                                 alt={room.name}
                                 className="w-16 h-16 object-cover rounded-lg"
                               />

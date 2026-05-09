@@ -122,13 +122,17 @@ const RoomSection = () => {
 
                 <div className="p-6 flex flex-col flex-1">
                   <div className="grid grid-cols-3 gap-3 mb-6">
-                    {(room.features || []).slice(0, 6).map((f) => (
+                    {(room.features || []).slice(0, 6).map((f, idx) => (
                       <div
-                        key={f.label}
+                        key={typeof f === "string" ? `f-${idx}` : f.label}
                         className="flex items-center gap-2 text-primary text-xs font-medium"
                       >
-                        <f.icon size={16} className="text-accent" />
-                        <span className="truncate">{f.label}</span>
+                        {f.icon ? (
+                          <f.icon size={16} className="text-accent" />
+                        ) : null}
+                        <span className="truncate">
+                          {typeof f === "string" ? f : f.label}
+                        </span>
                       </div>
                     ))}
                   </div>
