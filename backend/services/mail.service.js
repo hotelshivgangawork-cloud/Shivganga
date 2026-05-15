@@ -1,44 +1,38 @@
-import nodemailer from "nodemailer";
+import SibApiV3Sdk from "sib-api-v3-sdk";
 import { config } from "../configs/env.js";
 import SystemSetting from "../models/SystemSetting.model.js";
 
-// Initialize Nodemailer Transporter with SMTP
-const transporter = nodemailer.createTransport({
-  host: config.SMTP_HOST,
-  port: config.SMTP_PORT,
-  secure: config.SMTP_PORT === 465, // true for 465, false for other ports
-  auth: {
-    user: config.SMTP_USER,
-    pass: config.SMTP_PASS,
-  },
-});
+// Initialize Brevo API
+const defaultClient = SibApiV3Sdk.ApiClient.instance;
+const apiKey = defaultClient.authentications["api-key"];
+apiKey.apiKey = config.BREVO_API_KEY;
 
-// Verify connection configuration
-transporter.verify(function (error, success) {
-  if (error) {
-    console.error("❌ SMTP Connection Error:", error.message);
-  } else {
-    console.log("✅ SMTP Server is ready to take our messages");
-  }
-});
+const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
 
 /**
- * Helper to maintain compatibility with existing Brevo SDK calls
- * while using Nodemailer/SMTP under the hood.
+ * Helper to send mail using Brevo API
  */
 const sendMailShim = async ({ sender, to, subject, htmlContent }) => {
-  const mailOptions = {
-    from: `"${sender.name || config.BREVO_SENDER_NAME}" <${sender.email || config.BREVO_SENDER_EMAIL}>`,
-    to: Array.isArray(to) ? to.map(t => t.email).join(", ") : to,
-    subject: subject,
-    html: htmlContent,
+  const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+
+  sendSmtpEmail.subject = subject;
+  sendSmtpEmail.htmlContent = htmlContent;
+  sendSmtpEmail.sender = {
+    name: sender.name || config.BREVO_SENDER_NAME,
+    email: sender.email || config.BREVO_SENDER_EMAIL,
   };
+  
+  // Format 'to' field correctly for Brevo API
+  sendSmtpEmail.to = Array.isArray(to) 
+    ? to.map(t => ({ email: t.email, name: t.name || "" })) 
+    : [{ email: to }];
 
   try {
-    const info = await transporter.sendMail(mailOptions);
-    return info;
+    const data = await apiInstance.sendTransacEmail(sendSmtpEmail);
+    console.log("✅ Brevo API Success:", data.messageId);
+    return data;
   } catch (error) {
-    console.error("❌ Nodemailer Send Error:", error.message);
+    console.error("❌ Brevo API Error:", error.response?.text || error.message);
     throw error;
   }
 };

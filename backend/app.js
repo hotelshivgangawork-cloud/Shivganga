@@ -43,6 +43,9 @@ const app = express()
 const __filename = fileURLToPath(import.meta.url)
 const _dirname = path.dirname(__filename)
 
+// Enable trust proxy for Render/Vercel to fix rate limit issues
+app.set("trust proxy", 1);
+
 // ---------- CORS ----------
 const allowedOrigins = [
   "http://localhost:5173",
