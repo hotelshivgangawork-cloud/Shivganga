@@ -23,9 +23,30 @@ const sendMailShim = async ({ sender, to, subject, htmlContent }) => {
   };
   
   // Format 'to' field correctly for Brevo API
-  sendSmtpEmail.to = Array.isArray(to) 
-    ? to.map(t => ({ email: t.email, name: t.name || "" })) 
-    : [{ email: to }];
+  // Brevo requires 'name' to be present in each 'to' recipient object
+  sendSmtpEmail.to = Array.isArray(to)
+    ? to.map((t) => {
+        const emailVal = typeof t === "string" ? t : t.email;
+        // Use provided name, or extract from email, or fallback to 'Recipient'
+        const nameVal =
+          (typeof t === "object" && t.name)
+            ? t.name
+            : emailVal
+            ? emailVal.split("@")[0]
+            : "Recipient";
+        return { email: emailVal, name: nameVal };
+      })
+    : [
+        {
+          email: typeof to === "string" ? to : to?.email,
+          name:
+            (typeof to === "object" && to?.name)
+              ? to.name
+              : typeof to === "string"
+              ? to.split("@")[0]
+              : "Recipient",
+        },
+      ];
 
   try {
     const data = await apiInstance.sendTransacEmail(sendSmtpEmail);
